@@ -51,28 +51,66 @@ pip install -e .
 
 ### Environment Variables
 
-Create a `.env` file in the project root with the following:
+Create a `.env` file in the project root. You can copy `.env.example` as a starting point:
 
 ```env
+# ============================================
+# Required Configuration
+# ============================================
+
 # Browserbase Configuration
+# Get these from https://browserbase.com
 BROWSERBASE_API_KEY=your_browserbase_api_key
 BROWSERBASE_PROJECT_ID=your_project_id
 
 # OpenAI Configuration (for Stagehand)
+# Get this from https://platform.openai.com/api-keys
 OPENAI_API_KEY=your_openai_api_key
-STAGEHAND_MODEL_NAME=gpt-4.1-mini
 
 # Vital Knowledge Credentials
+# Your Vital Knowledge account credentials
 Vital_login=your_vital_username
 Vital_password=your_vital_password
 
-# Feature Flags (optional, defaults to True)
+# ============================================
+# Optional Configuration
+# ============================================
+
+# Stagehand Model Configuration
+# Options: gpt-4.1-mini, gpt-4.1, gpt-4.1-preview, etc.
+STAGEHAND_MODEL_NAME=gpt-4.1-mini
+
+# Stagehand Verbosity (0=minimal, 1=medium, 2=detailed)
+STAGEHAND_VERBOSE=1
+
+# Stagehand DOM Settle Timeout (milliseconds)
+STAGEHAND_DOM_SETTLE_TIMEOUT_MS=30000
+
+# Feature Flags (true/false, defaults to true if not set)
+ENABLE_YAHOO_QUOTE=true
+ENABLE_YAHOO_ANALYSIS=true
+# MarketWatch: Keep false unless you have BROWSERBASE_ADVANCED_STEALTH enabled
+# MarketWatch requires advanced stealth mode (Scale Plan) to avoid CAPTCHA
+ENABLE_MARKETWATCH=false
 ENABLE_GOOGLE_NEWS=true
 ENABLE_VITAL_NEWS=true
 ENABLE_MACRO_NEWS=true
 
-# Concurrency (optional, defaults to 2)
-MAX_CONCURRENT_BROWSERS=10
+# Concurrency (number of concurrent browser sessions, default: 2)
+MAX_CONCURRENT_BROWSERS=2
+
+# Browserbase Advanced Stealth Mode (requires Scale Plan, default: false)
+BROWSERBASE_ADVANCED_STEALTH=false
+
+# Browserbase CAPTCHA Solving (default: true)
+BROWSERBASE_SOLVE_CAPTCHAS=true
+
+# Browserbase Custom CAPTCHA Selectors (optional, only if needed)
+# BROWSERBASE_CAPTCHA_IMAGE_SELECTOR=
+# BROWSERBASE_CAPTCHA_INPUT_SELECTOR=
+
+# Browserbase Proxies (recommended for CAPTCHA solving, default: true)
+BROWSERBASE_USE_PROXIES=true
 ```
 
 ### Watchlist
@@ -151,7 +189,8 @@ Individual JSON snapshots are saved in `data/snapshots/`:
 - **Macro News**: Overall market-moving news summaries
 
 ### MarketWatch
-- **Top Stories**: Latest market headlines (currently disabled due to CAPTCHA)
+- **Top Stories**: Latest market headlines
+- **Note**: Requires `BROWSERBASE_ADVANCED_STEALTH=true` (Scale Plan) to avoid CAPTCHA issues. Keep `ENABLE_MARKETWATCH=false` unless you have advanced stealth mode enabled.
 
 ## Architecture
 
@@ -228,8 +267,7 @@ python -m src.skills.vital_knowledge.macro_news
 - Articles with failed extractions are still included with basic metadata
 
 ### CAPTCHA Issues
-- MarketWatch currently disabled due to CAPTCHA
-- Consider enabling advanced stealth mode in Browserbase settings
+- **MarketWatch**: Keep `ENABLE_MARKETWATCH=false` unless you have `BROWSERBASE_ADVANCED_STEALTH=true` enabled (requires Browserbase Scale Plan). MarketWatch requires advanced stealth mode to avoid CAPTCHA blocking.
 
 ### Missing Data
 - Check that environment variables are set correctly
