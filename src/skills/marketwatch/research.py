@@ -88,10 +88,9 @@ async def fetch_marketwatch_top_stories(
         # Check if we got any content
         if text and hasattr(text, 'extraction') and text.extraction:
             print(f"[MarketWatch] Successfully extracted content")
-            # TODO: Parse extracted content into MarketWatchStory objects
         else:
             print(f"[MarketWatch] No content extracted - likely blocked by DataDome")
-        
+
         return MarketWatchTopStories(ticker=ticker.upper(), stories=[])
         
     except Exception as e:

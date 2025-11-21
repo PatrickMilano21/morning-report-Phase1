@@ -6,15 +6,12 @@ from pydantic import BaseModel, Field, ConfigDict
 
 
 class YahooQuoteSnapshot(BaseModel):
-    """
-    Structured snapshot of the main Yahoo Finance quote panel.
-    """
-    
+    """Structured snapshot of Yahoo Finance quote data."""
+
     model_config = ConfigDict(populate_by_name=True)
 
     ticker: str
 
-    # Regular session
     last_price: Optional[float] = Field(default=None, alias="lastPrice")
     change_abs: Optional[float] = Field(default=None, alias="changeAbs")
     change_pct: Optional[float] = Field(default=None, alias="changePct")
@@ -30,18 +27,12 @@ class YahooQuoteSnapshot(BaseModel):
     volume: Optional[int] = None
     avg_volume: Optional[int] = Field(default=None, alias="avgVolume")
 
-    # Extended-hours session
     premarket_change_pct: Optional[float] = None
     after_hours_change_pct: Optional[float] = None
 
 
 async def fetch_yahoo_quote(page, ticker: str) -> YahooQuoteSnapshot:
-    """
-    Use Stagehand extract to pull a structured quote snapshot for `ticker`
-    from the Yahoo Finance quote page.
-
-    `page` is a StagehandPage (stagehand.page) instance.
-    """
+    """Fetch quote data from Yahoo Finance using Stagehand."""
     url = f"https://finance.yahoo.com/quote/{ticker}"
     await page.goto(url)
 

@@ -1,47 +1,20 @@
-# src/skills/googlenews/research.py
-#
-# This script scrapes Google News for stock-related articles using Stagehand
-# (AI-powered browser automation). It navigates through Google Search,
-# filters by recent/sorted by date, visits each article, and extracts summaries.
-
-# =============================================================================
-# IMPORTS
-# =============================================================================
-
 from typing import List, Optional, Literal
 from datetime import datetime, timedelta
 import asyncio
-
-# Pydantic is used for data validation and creating structured models
-# that Stagehand's AI can populate from web page content
 from pydantic import BaseModel, Field, ConfigDict
 
 
-# =============================================================================
-# DATA MODELS (Pydantic)
-# =============================================================================
-# These models define the structure of data we want to extract.
-# Maintains same patterns as yahoo/research.py for seamless integration.
-
 class GoogleNewsStory(BaseModel):
-    """
-    Represents one news article with its URL and summary.
-    Each story contains the article URL and a brief summary of content.
-    """
+    """News article with URL and summary."""
 
-    # Core article info
     headline: str = Field(..., description="Article headline/title")
     url: str = Field(..., description="Full URL to the article")
     source: Optional[str] = Field(default=None, description="Publisher/source name")
     age: Optional[str] = Field(default=None, description="Time indicator like '2 hours ago'")
-
-    # Content summary - extracted by visiting the article
     summary: Optional[str] = Field(
         default=None,
         description="Brief summary of why the stock is moving based on article content",
     )
-
-    # AI-analyzed fields
     sentiment: Optional[Literal["positive", "negative", "neutral"]] = Field(
         default=None,
         description="Sentiment of the article (positive, negative, or neutral)",
@@ -49,11 +22,8 @@ class GoogleNewsStory(BaseModel):
 
 
 class GoogleNewsSummary(BaseModel):
-    """
-    AI-generated summary across ALL stories for a ticker.
-    Provides a high-level view of the news narrative.
-    """
-    
+    """AI-generated summary across all stories for a ticker."""
+
     model_config = ConfigDict(populate_by_name=True)
 
     overall_sentiment: Optional[Literal["bullish", "bearish", "mixed", "neutral"]] = Field(
@@ -69,19 +39,15 @@ class GoogleNewsSummary(BaseModel):
 
 
 class GoogleNewsTopStories(BaseModel):
-    """
-    Container that holds all extracted data for a single stock ticker.
-    This is the main object returned by fetch_google_news_stories().
-    """
+    """Container for all Google News data for a ticker."""
 
     ticker: str
     stories: List[GoogleNewsStory] = Field(default_factory=list)
     news_summary: Optional[GoogleNewsSummary] = Field(default=None)
 
 
-# Helper model for extracting article links from search results
 class ArticleLink(BaseModel):
-    """Temporary model for extracting article links before visiting them."""
+    """Helper model for extracting article links from search results."""
     headline: str
     url: str
     source: Optional[str] = None
@@ -93,41 +59,16 @@ class ArticleLinks(BaseModel):
     articles: List[ArticleLink] = Field(default_factory=list)
 
 
-# =============================================================================
-# MAIN SCRAPING FUNCTION
-# =============================================================================
-
 async def fetch_google_news_stories(
-    page,                          # Stagehand page object (browser tab)
-    ticker: str,                   # Stock ticker symbol (e.g., "AAPL")
-    max_stories: int = 5,          # How many articles to visit (default: 5)
-    max_days: int = 2,             # Only get news from last N days
+    page,
+    ticker: str,
+    max_stories: int = 5,
+    max_days: int = 2,
 ) -> GoogleNewsTopStories:
-    """
-    Fetch top news stories from Google News for a given stock ticker.
-
-    This function:
-    1. Navigates directly to Google News search with date filter and sort by date
-    2. Extracts article links (limited to last N days)
-    3. Visits each article and extracts a summary
-    4. Returns structured data with URLs and summaries
-
-    Args:
-        page: A StagehandPage instance (the browser tab to use)
-        ticker: Stock ticker symbol (e.g., "AAPL")
-        max_stories: Maximum number of articles to visit (default: 5)
-        max_days: Only include articles from last N days (default: 2)
-
-    Returns:
-        GoogleNewsTopStories with list of stories containing URLs and summaries
-    """
+    """Fetch Google News stories for a ticker with Stagehand."""
 
     search_query = f"{ticker} stock news"
-    
-    # Build Google News URL with filters directly in query parameters:
-    # - tbm=nws: News tab
-    # - tbs=qdr:d{max_days}: Filter to last N days (qdr:d1 = 1 day, qdr:d2 = 2 days, etc.)
-    # - tbs=sbd:1: Sort by date (newest first)
+
     url = (
         f"https://www.google.com/search?"
         f"q={search_query.replace(' ', '+')}"
@@ -138,16 +79,11 @@ async def fetch_google_news_stories(
     print(f"[GoogleNews] Navigating to Google News for '{search_query}'")
     print(f"[GoogleNews] URL: {url}")
 
-    # Initialize stories list before try block so it's available in exception handler
     stories: List[GoogleNewsStory] = []
 
     try:
-        # Navigate directly to filtered Google News results
         await page.goto(url, wait_until="networkidle", timeout=30000)
         print(f"[GoogleNews] News results loaded")
-
-        # ---------------------------------------------------------------------
-        # Extract article links from search results
         # ---------------------------------------------------------------------
         # Use a hybrid approach: Stagehand extract() for content, observe() for URLs
 

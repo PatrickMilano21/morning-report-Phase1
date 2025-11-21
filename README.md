@@ -33,7 +33,7 @@ Morning Snapshot pulls quotes, AI analysis, and headlines from Yahoo Finance, Go
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd morning_report_copy
+cd morning_report
 ```
 
 2. Create a virtual environment:
@@ -214,7 +214,7 @@ Individual JSON snapshots are saved in `data/snapshots/`:
 ## Project Structure
 
 ```
-morning_report_copy/
+morning_report/
 ├── config/
 │   └── watchlist.json          # Ticker symbols
 ├── data/

@@ -62,10 +62,7 @@ async def _run_source_with_session(
     *args,
     **kwargs,
 ):
-    """
-    Run a source function with its own dedicated browser session.
-    This ensures complete isolation between sources.
-    """
+    """Run a source function with its own isolated browser session."""
     stagehand = None
     try:
         from src.core.stagehand_runner import create_stagehand_session
@@ -84,10 +81,7 @@ async def _run_source_with_session(
 
 
 async def fetch_macro_news_with_session():
-    """
-    Fetch macro news with its own dedicated browser session.
-    This runs independently from ticker processing.
-    """
+    """Fetch macro news in a dedicated browser session."""
     stagehand = None
     try:
         from src.core.stagehand_runner import create_stagehand_session
@@ -106,16 +100,12 @@ async def fetch_macro_news_with_session():
 
 
 async def _run_vital_knowledge_batch(tickers: list[str]):
-    """
-    Run Vital Knowledge batch fetch with its own dedicated browser session.
-    This processes all tickers at once, opening each report only once.
-    """
+    """Batch fetch Vital Knowledge data for all tickers in a single session."""
     stagehand = None
     try:
         from src.core.stagehand_runner import create_stagehand_session
         stagehand, page = await create_stagehand_session()
         results = await fetch_vital_knowledge_headlines_batch(page, tickers)
-        # Convert list of results to dict for easier lookup
         return {result.ticker: result for result in results}
     except Exception as e:
         print(f"[ERROR] Vital Knowledge batch failed: {e}")
@@ -139,8 +129,7 @@ async def process_ticker(
 ):
     async with sem:
         print(f"\n=== Processing {ticker} ===")
-        
-        # Per-source results
+
         quote = None
         analysis = None
         mw = None
@@ -148,10 +137,6 @@ async def process_ticker(
         vital_knowledge = None
         error_messages: list[str] = []
 
-        # Each source gets its own browser session for complete isolation
-        # Run sources sequentially within each ticker
-        # The semaphore controls how many tickers run in parallel
-        
         # --- Yahoo quote ---
         if use_yahoo_quote:
             print(f"[{ticker}] Starting Yahoo Quote...")
@@ -189,12 +174,8 @@ async def process_ticker(
             else:
                 error_messages.append("GoogleNews failed")
 
-        # --- Vital Knowledge ---
-        # Note: Vital Knowledge is now processed in batch for all tickers separately
-        # This is handled outside of process_ticker to ensure all tickers use the same reports
+        # Vital Knowledge is processed in batch outside of this function
         vital_knowledge = None
-
-        # Build the return payload; None is fine for any missing source
         return {
             "ticker": ticker,
             "error": "; ".join(error_messages) if error_messages else None,
@@ -224,15 +205,12 @@ async def main():
         f"macro_news={use_macro_news}",
     )
 
-
-
-    # 1) Load watchlist
+    # Load watchlist
     if WATCHLIST_PATH.exists():
         watchlist = json.loads(WATCHLIST_PATH.read_text())
     else:
         watchlist = ["AAPL", "GOOGL"]
 
-    # 2) Ensure output dirs
     SNAPSHOT_DIR.mkdir(parents=True, exist_ok=True)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -244,46 +222,38 @@ async def main():
     macro_news_snapshot_path = SNAPSHOT_DIR / f"macro_news_snapshot_{today.isoformat()}.json"
     report_path = REPORTS_DIR / f"morning_snapshot_{today.isoformat()}.md"
 
-    # 3) Concurrency control
     max_concurrent = _get_max_concurrent_browsers()
     print(f"Using MAX_CONCURRENT_BROWSERS = {max_concurrent}")
     sem = asyncio.Semaphore(max_concurrent)
 
-    # 4) Kick off all ticker tasks in parallel, plus macro news and vital knowledge batch if enabled
     ticker_tasks = [
         process_ticker(ticker, sem, use_yahoo_quote, use_yahoo_analysis, use_marketwatch, use_googlenews, use_vital_knowledge)
         for ticker in watchlist
     ]
-    
-    # Add macro news task if enabled (runs independently, not per ticker)
+
     all_tasks = list(ticker_tasks)
     macro_news_result = None
     if use_macro_news:
         print("\n[MacroNews] Starting macro news fetch (independent browser session)...")
         macro_news_task = fetch_macro_news_with_session()
         all_tasks.append(macro_news_task)
-    
-    # Add Vital Knowledge batch task if enabled (runs independently, processes all tickers at once)
+
     vital_knowledge_batch_results = None
     if use_vital_knowledge:
         print(f"\n[VitalKnowledge] Starting batch fetch for {len(watchlist)} tickers (independent browser session)...")
         vital_knowledge_batch_task = _run_vital_knowledge_batch(watchlist)
         all_tasks.append(vital_knowledge_batch_task)
-    
-    # Run all tasks in parallel
-    all_results = await asyncio.gather(*all_tasks)
-    
-    # Separate results
-    results = all_results[:len(ticker_tasks)]  # Ticker results
-    
-    if use_macro_news:
-        macro_news_result = all_results[len(ticker_tasks)]  # Macro news is after tickers
-        if use_vital_knowledge:
-            vital_knowledge_batch_results = all_results[len(ticker_tasks) + 1]  # Vital Knowledge is last
-    elif use_vital_knowledge:
-        vital_knowledge_batch_results = all_results[len(ticker_tasks)]  # Vital Knowledge is after tickers
 
-    # 4b) Merge Vital Knowledge batch results into ticker results (before snapshots)
+    all_results = await asyncio.gather(*all_tasks)
+
+    results = all_results[:len(ticker_tasks)]
+
+    if use_macro_news:
+        macro_news_result = all_results[len(ticker_tasks)]
+        if use_vital_knowledge:
+            vital_knowledge_batch_results = all_results[len(ticker_tasks) + 1]
+    elif use_vital_knowledge:
+        vital_knowledge_batch_results = all_results[len(ticker_tasks)]
     if use_vital_knowledge and vital_knowledge_batch_results:
         print("\n[Merging] Adding Vital Knowledge batch results to ticker data...")
         for item in results:
@@ -295,7 +265,6 @@ async def main():
             else:
                 print(f"[WARN] {ticker}: No Vital Knowledge data from batch")
 
-    # 5) Yahoo-only snapshot (quotes + Yahoo AI analysis)
     yahoo_snapshot = {
         "as_of": today.isoformat(),
         "tickers": [
@@ -311,7 +280,6 @@ async def main():
     snapshot_path.write_text(json.dumps(yahoo_snapshot, indent=2), encoding="utf-8")
     print(f"\nYahoo snapshot written to: {snapshot_path}")
 
-    # 6) MarketWatch-only snapshot
     mw_snapshot = {
         "as_of": today.isoformat(),
         "tickers": [
@@ -326,7 +294,6 @@ async def main():
     mw_snapshot_path.write_text(json.dumps(mw_snapshot, indent=2), encoding="utf-8")
     print(f"MarketWatch snapshot written to: {mw_snapshot_path}")
 
-    # 6b) Google News-only snapshot
     googlenews_snapshot = {
         "as_of": today.isoformat(),
         "tickers": [
@@ -341,7 +308,6 @@ async def main():
     googlenews_snapshot_path.write_text(json.dumps(googlenews_snapshot, indent=2), encoding="utf-8")
     print(f"Google News snapshot written to: {googlenews_snapshot_path}")
 
-    # 6c) Vital Knowledge-only snapshot
     vital_knowledge_snapshot = {
         "as_of": today.isoformat(),
         "tickers": [
@@ -356,7 +322,6 @@ async def main():
     vital_knowledge_snapshot_path.write_text(json.dumps(vital_knowledge_snapshot, indent=2), encoding="utf-8")
     print(f"Vital Knowledge snapshot written to: {vital_knowledge_snapshot_path}")
 
-    # 6d) Macro News snapshot (independent, not per ticker)
     if use_macro_news:
         macro_news_snapshot = {
             "as_of": today.isoformat(),
@@ -365,24 +330,19 @@ async def main():
         macro_news_snapshot_path.write_text(json.dumps(macro_news_snapshot, indent=2), encoding="utf-8")
         print(f"Macro News snapshot written to: {macro_news_snapshot_path}")
 
-    # 7) Build and write Markdown report
     typed_items = []
     for item in results:
         ticker = item.get("ticker")
 
-        # If we don't even have a quote, it's not useful for the report.
         if not item.get("quote"):
             print(f"[WARN] Skipping {ticker} in report (no quote data)")
             continue
 
-        # Build quote object (required)
         q = YahooQuoteSnapshot(**item["quote"])
 
-        # Build analysis object (optional)
         if item.get("analysis"):
             a = YahooAIAnalysis(**item["analysis"])
         else:
-            # Graceful fallback when Yahoo analysis is disabled or failed
             print(f"[WARN] {ticker}: no Yahoo AI analysis; using empty analysis object")
             a = YahooAIAnalysis(
                 ticker=ticker,
@@ -391,7 +351,6 @@ async def main():
                 bullets=[],
             )
 
-        # MarketWatch object (optional)
         mw_obj = None
         if item.get("marketwatch"):
             try:
@@ -400,7 +359,6 @@ async def main():
                 print(f"[WARN] {ticker}: failed to parse MarketWatchTopStories: {e}")
                 mw_obj = None
 
-        # Google News object (optional)
         googlenews_obj = None
         if item.get("googlenews"):
             try:
@@ -409,7 +367,6 @@ async def main():
                 print(f"[WARN] {ticker}: failed to parse GoogleNewsTopStories: {e}")
                 googlenews_obj = None
 
-        # Vital Knowledge object (optional)
         vital_knowledge_obj = None
         if item.get("vital_knowledge"):
             try:
@@ -418,7 +375,6 @@ async def main():
                 print(f"[WARN] {ticker}: failed to parse VitalKnowledgeReport: {e}")
                 vital_knowledge_obj = None
 
-        # You can still inspect the per-source error string if you want
         if item.get("error"):
             print(f"[INFO] {ticker} had source errors: {item['error']}")
 
@@ -428,7 +384,6 @@ async def main():
         print("[WARN] No successful tickers to include in report.")
         return
 
-    # Parse macro news object if available
     macro_news_obj = None
     if use_macro_news and macro_news_result:
         try:
