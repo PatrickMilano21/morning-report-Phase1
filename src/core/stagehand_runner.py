@@ -42,9 +42,9 @@ async def create_stagehand_session():
         project_id=os.getenv("BROWSERBASE_PROJECT_ID"),
         model_name=model_name,
         model_api_key=os.getenv("OPENAI_API_KEY"),
-        verbose=int(os.getenv("STAGEHAND_VERBOSE", "1")),
+        verbose=int(os.getenv("STAGEHAND_VERBOSE", "0")),
         dom_settle_timeout_ms=int(
-            os.getenv("STAGEHAND_DOM_SETTLE_TIMEOUT_MS", "30000")
+            os.getenv("STAGEHAND_DOM_SETTLE_TIMEOUT_MS", "15000")
         ),
         self_heal=True,
         browser_settings=browser_settings if browser_settings else None,

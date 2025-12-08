@@ -220,48 +220,38 @@ def build_morning_report(
     lines.append("")
 
     if macro_news:
-        macro_summary = None
-        if macro_news.market_close_summary:
-            macro_summary = macro_news.market_close_summary
-        elif macro_news.morning_summary:
-            macro_summary = macro_news.morning_summary
-
-        if macro_summary:
+        # Market Overview section - use unified summary
+        if macro_news.summary:
             lines.append("## Market Overview")
             lines.append("")
-            lines.append(macro_summary)
+            lines.append(macro_news.summary)
             lines.append("")
             lines.append("---")
             lines.append("")
 
-    if macro_news:
-        lines.append("## Market Macro Overview")
-        lines.append("")
+        # Market Macro Overview section - use unified bullets
+        if macro_news.bullets:
+            lines.append("## Market Macro Overview")
+            lines.append("")
+            
+            # Show metadata if available (for transparency/debugging)
+            if macro_news.report_count > 0 or macro_news.date_range:
+                metadata_parts = []
+                if macro_news.report_count > 0:
+                    metadata_parts.append(f"{macro_news.report_count} reports")
+                if macro_news.date_range:
+                    metadata_parts.append(f"({macro_news.date_range})")
+                if metadata_parts:
+                    lines.append(f"_{', '.join(metadata_parts)}_")
+                    lines.append("")
+            
+            lines.append("**Key Points:**")
+            for bullet in macro_news.bullets:
+                lines.append(f"- {bullet}")
+            lines.append("")
 
-        if macro_news.morning_date and macro_news.morning_summary:
-            lines.append(f"### Morning Report ({macro_news.morning_date})")
+            lines.append("---")
             lines.append("")
-            lines.append(macro_news.morning_summary)
-            lines.append("")
-            if macro_news.morning_bullets:
-                lines.append("**Key Points:**")
-                for bullet in macro_news.morning_bullets:
-                    lines.append(f"- {bullet}")
-                lines.append("")
-
-        if macro_news.market_close_date and macro_news.market_close_summary:
-            lines.append(f"### Market Close Report ({macro_news.market_close_date})")
-            lines.append("")
-            lines.append(macro_news.market_close_summary)
-            lines.append("")
-            if macro_news.market_close_bullets:
-                lines.append("**Key Points:**")
-                for bullet in macro_news.market_close_bullets:
-                    lines.append(f"- {bullet}")
-                lines.append("")
-
-        lines.append("---")
-        lines.append("")
 
     first = True
     for quote, analysis, mw, googlenews, vital_knowledge in items:

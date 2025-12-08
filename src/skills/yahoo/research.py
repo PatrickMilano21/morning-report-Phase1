@@ -12,10 +12,10 @@ class YahooAIAnalysis(BaseModel):
 
     ticker: str
 
-    title: Optional[str] = None
-    updated_at: Optional[str] = Field(default=None, alias="updatedAt")
-    summary: Optional[str] = None
-    bullets: List[str] = Field(default_factory=list)
+    title: Optional[str] = Field(default=None, description="Heading of the AI analysis panel")
+    updated_at: Optional[str] = Field(default=None, alias="updatedAt", description="Timestamp like 'Updated 2 hours ago'")
+    summary: Optional[str] = Field(default=None, description="2-3 sentence explanation of why stock is moving")
+    bullets: List[str] = Field(default_factory=list, description="3-5 key drivers: news, earnings, macro events")
 
 
 async def fetch_yahoo_ai_analysis(page, ticker: str) -> YahooAIAnalysis:

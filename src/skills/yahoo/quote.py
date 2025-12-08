@@ -1,63 +1,125 @@
-# src/skills/yahoo/quote.py
-
+"""
+Yahoo Finance quote extraction using observe() -> cache -> extract() pattern.
+"""
+import asyncio
 from typing import Optional
 
-from pydantic import BaseModel, Field, ConfigDict
+from src.core.cache import selector_cache
+from .schemas import YahooQuotePrices, YahooQuoteVolume, YahooQuoteSnapshot
+
+CACHE_KEY = "yahoo_quote_main_container"
 
 
-class YahooQuoteSnapshot(BaseModel):
-    """Structured snapshot of Yahoo Finance quote data."""
+async def _navigate_with_retry(page, url: str, max_retries: int = 2):
+    """
+    Navigate to URL with retry logic for transient Browserbase errors.
+    """
+    for attempt in range(max_retries + 1):
+        try:
+            await page.goto(url, timeout=30000)
+            return
+        except Exception as e:
+            if attempt < max_retries:
+                wait_time = 2 ** attempt  # 1s, 2s
+                print(f"  Navigation failed, retrying in {wait_time}s... ({e})")
+                await asyncio.sleep(wait_time)
+            else:
+                raise
 
-    model_config = ConfigDict(populate_by_name=True)
 
-    ticker: str
+async def _get_or_discover_selector(page, cache_key: str) -> Optional[str]:
+    """
+    Get cached selector or discover via observe().
+    Returns XPath selector or None if discovery fails.
+    """
+    selector = selector_cache.get(cache_key)
 
-    last_price: Optional[float] = Field(default=None, alias="lastPrice")
-    change_abs: Optional[float] = Field(default=None, alias="changeAbs")
-    change_pct: Optional[float] = Field(default=None, alias="changePct")
+    if selector:
+        return selector
 
-    currency: Optional[str] = None
+    # Discover selector via observe()
+    regions = await page.observe(
+        "find the entire quote page section containing the stock price, change, previous close, volume, and statistics table"
+    )
 
-    open_price: Optional[float] = Field(default=None, alias="openPrice")
-    previous_close: Optional[float] = Field(default=None, alias="previousClose")
+    if regions:
+        selector = regions[0].selector
+        selector_cache.set(cache_key, selector)
+        return selector
 
-    day_low: Optional[float] = Field(default=None, alias="dayLow")
-    day_high: Optional[float] = Field(default=None, alias="dayHigh")
+    return None
 
-    volume: Optional[int] = None
-    avg_volume: Optional[int] = Field(default=None, alias="avgVolume")
 
-    premarket_change_pct: Optional[float] = None
-    after_hours_change_pct: Optional[float] = None
+async def _scoped_extract(page, instruction: str, schema, selector: Optional[str]):
+    """
+    Extract with scoped selector, falling back to full-page if needed.
+    """
+    if selector:
+        try:
+            return await page.extract(
+                instruction=instruction,
+                schema=schema,
+                selector=selector,
+            )
+        except Exception:
+            # Selector invalid - clear cache for next run
+            selector_cache.delete(CACHE_KEY)
+
+    # Fallback: full-page extract
+    return await page.extract(
+        instruction=instruction,
+        schema=schema,
+    )
+
+
+async def fetch_yahoo_quote_prices(page, ticker: str) -> YahooQuotePrices:
+    """
+    Extract price data from Yahoo Finance quote page.
+    Uses cached selector when available.
+    """
+    url = f"https://finance.yahoo.com/quote/{ticker}"
+    await _navigate_with_retry(page, url)
+
+    selector = await _get_or_discover_selector(page, CACHE_KEY)
+
+    return await _scoped_extract(
+        page=page,
+        instruction="Extract only: current price, absolute change, percentage change, previous close.",
+        schema=YahooQuotePrices,
+        selector=selector,
+    )
+
+
+async def fetch_yahoo_quote_volume(page, ticker: str) -> YahooQuoteVolume:
+    """
+    Extract volume data from Yahoo Finance quote page.
+    Assumes page already navigated. Uses cached selector.
+    """
+    selector = await _get_or_discover_selector(page, CACHE_KEY)
+
+    return await _scoped_extract(
+        page=page,
+        instruction="Extract only: current volume, average daily volume.",
+        schema=YahooQuoteVolume,
+        selector=selector,
+    )
 
 
 async def fetch_yahoo_quote(page, ticker: str) -> YahooQuoteSnapshot:
-    """Fetch quote data from Yahoo Finance using Stagehand."""
+    """
+    Legacy function for backwards compatibility.
+    Extracts full quote snapshot using the new pattern.
+    """
     url = f"https://finance.yahoo.com/quote/{ticker}"
-    await page.goto(url)
+    await _navigate_with_retry(page, url)
 
-    snapshot = await page.extract(
-        instruction=f"""
-        You are on the Yahoo Finance quote page for the stock symbol {ticker}.
+    selector = await _get_or_discover_selector(page, CACHE_KEY)
 
-        From the main quote panel, extract:
-        - last_price: the current regular-session last traded price
-        - change_abs: today's absolute price change vs previous close
-        - change_pct: today's percentage change vs previous close (e.g. -1.82 for -1.82%)
-        - currency: the trading currency, such as "USD"
-        - open_price: today's official open
-        - previous_close: yesterday's close
-        - day_low and day_high: today's regular-session intraday low and high
-        - volume: today's regular-session volume
-        - avg_volume: the average daily volume if shown
-
-        If extended-hours data is visible, also extract:
-        - premarket_change_pct: percentage move during pre-market trading
-        - after_hours_change_pct: percentage move during after-hours trading
-
-        Return numeric values where possible instead of strings with symbols or commas.
-        """,
+    snapshot = await _scoped_extract(
+        page=page,
+        instruction="Extract: current price, change, previous close, open, day range, volume, avg volume.",
         schema=YahooQuoteSnapshot,
+        selector=selector,
     )
 
     snapshot.ticker = ticker.upper()

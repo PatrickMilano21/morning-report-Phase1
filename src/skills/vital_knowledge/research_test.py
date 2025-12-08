@@ -1,6 +1,6 @@
-# src/skills/vital_knowledge/research.py
+# src/skills/vital_knowledge/research_test.py
 #
-# This script scrapes Vital Knowledge for ticker-specific macro news using Stagehand.
+# TEST VERSION: New approach to ticker-specific Vital Knowledge extraction
 # - Navigates to "Everything" tab
 # - Extracts all report links with dates from the page
 # - Filters by date constraint (today back to N days ago at 12pm ET)
@@ -10,48 +10,14 @@
 import asyncio
 import os
 from datetime import datetime, timedelta
-from typing import List, Optional, Literal, Dict
-from pydantic import BaseModel, Field, ConfigDict
+from typing import Optional, List, Dict
+from pydantic import BaseModel, Field
 from zoneinfo import ZoneInfo
 
 
 # =============================================================================
 # DATA MODELS (Pydantic)
 # =============================================================================
-
-class VitalKnowledgeHeadline(BaseModel):
-    """Single headline from Vital Knowledge report."""
-    headline: str = Field(..., description="The headline text")
-    context: Optional[str] = Field(default=None, description="Additional context or details")
-    sentiment: Optional[Literal["positive", "negative", "neutral"]] = Field(
-        default=None,
-        description="Sentiment of the headline"
-    )
-
-
-class VitalKnowledgeSummary(BaseModel):
-    """Summary of all headlines for a ticker."""
-    overall_sentiment: Optional[Literal["bullish", "bearish", "mixed", "neutral"]] = Field(
-        default=None,
-        description="Overall sentiment across headlines"
-    )
-    key_themes: List[str] = Field(
-        default_factory=list,
-        description="Main themes or topics"
-    )
-    summary: Optional[str] = Field(
-        default=None,
-        description="Very brief 1-2 sentence summary of key points"
-    )
-
-
-class VitalKnowledgeReport(BaseModel):
-    """Container for all extracted Vital Knowledge data."""
-    ticker: str
-    headlines: List[VitalKnowledgeHeadline] = Field(default_factory=list)
-    report_dates: List[str] = Field(default_factory=list, description="Dates of reports scraped")
-    summary: Optional[VitalKnowledgeSummary] = Field(default=None)
-
 
 class ReportLink(BaseModel):
     """A single report link extracted from the Everything page."""
@@ -82,12 +48,19 @@ class ArticleSource(BaseModel):
 
 
 class TickerReport(BaseModel):
-    """Internal model for processing ticker data."""
+    """Complete report for a single ticker."""
     ticker: str = Field(..., description="Stock ticker symbol")
     bullets: List[str] = Field(default_factory=list, description="Top 5 bullets, weighted by importance/recency")
     summary: Optional[TickerSummary] = Field(default=None, description="Overall summary for this ticker")
     sources: List[ArticleSource] = Field(default_factory=list, description="Reports that mentioned this ticker")
     report_count: int = Field(default=0, description="Number of reports that mentioned this ticker")
+
+
+class BatchTickerResult(BaseModel):
+    """Results for all tickers from batch processing."""
+    tickers: List[TickerReport] = Field(default_factory=list, description="Results per ticker")
+    total_reports_processed: int = Field(default=0, description="Total reports opened")
+    date_range: str = Field(default="", description="Date range of reports included")
 
 
 # =============================================================================
@@ -132,7 +105,7 @@ Return a list of bullet points, each being a complete, actionable piece of infor
 def parse_vital_date(date_str: str) -> Optional[datetime]:
     """
     Parse Vital Knowledge date string to datetime.
-    
+
     Examples:
     - "Dec 3, 2025 05:20 AM" -> datetime(2025, 12, 3, 5, 20)
     - "Dec 2, 2025 04:02 PM" -> datetime(2025, 12, 2, 16, 2)
@@ -142,20 +115,20 @@ def parse_vital_date(date_str: str) -> Optional[datetime]:
             "%b %d, %Y %I:%M %p",  # "Dec 3, 2025 05:20 AM"
             "%B %d, %Y %I:%M %p",  # "December 3, 2025 05:20 AM"
         ]
-        
+
         for fmt in formats:
             try:
                 dt = datetime.strptime(date_str, fmt)
                 return dt
             except ValueError:
                 continue
-        
+
         # Try date only
         date_only_formats = [
             "%b %d, %Y",  # "Dec 3, 2025"
             "%B %d, %Y",  # "December 3, 2025"
         ]
-        
+
         date_parts = ' '.join(date_str.split()[:3])
         for fmt in date_only_formats:
             try:
@@ -163,7 +136,7 @@ def parse_vital_date(date_str: str) -> Optional[datetime]:
                 return dt
             except ValueError:
                 continue
-        
+
         return None
     except Exception:
         return None
@@ -189,8 +162,19 @@ def is_in_date_range(report_date: datetime, start_date: datetime, end_date: date
     return start_date <= report_date <= end_date
 
 
-def _convert_ticker_report_to_vital_knowledge_report(ticker_report: TickerReport) -> VitalKnowledgeReport:
+# =============================================================================
+# CONVERSION FUNCTION
+# =============================================================================
+
+def _convert_ticker_report_to_vital_knowledge_report(ticker_report: TickerReport):
     """Convert TickerReport to VitalKnowledgeReport for compatibility."""
+    # Import here to avoid circular dependency
+    from src.skills.vital_knowledge.research import (
+        VitalKnowledgeReport,
+        VitalKnowledgeHeadline,
+        VitalKnowledgeSummary,
+    )
+    
     # Convert bullets to headlines
     headlines = [
         VitalKnowledgeHeadline(
@@ -238,7 +222,7 @@ async def fetch_vital_knowledge_headlines_batch(
     page,
     tickers: List[str],
     days_back: Optional[int] = None,
-) -> List[VitalKnowledgeReport]:
+):
     """
     Fetch ticker-specific news from Vital Knowledge for multiple tickers.
 
@@ -274,19 +258,19 @@ async def fetch_vital_knowledge_headlines_batch(
     if not username or not password:
         raise ValueError("Missing Vital_login or Vital_password in .env")
 
-    print("[VitalKnowledge] Navigating to login page...")
+    print("[Research] Navigating to login page...")
     await page.goto("https://vitalknowledge.net/login", wait_until="networkidle", timeout=30000)
 
-    print("[VitalKnowledge] Entering credentials...")
+    print("[Research] Entering credentials...")
     await page.act(f"Enter '{username}' into the username or email input field")
     await page.act(f"Enter '{password}' into the password input field")
     await page.act("Click the login or sign in button")
     await page.wait_for_load_state("networkidle", timeout=30000)
-    print("[VitalKnowledge] Login successful")
+    print("[Research] Login successful")
 
     # Get date constraint
     start_date, end_date = get_date_constraint(days_back)
-    print(f"[VitalKnowledge] Date constraint: {start_date.strftime('%Y-%m-%d %H:%M %Z')} to {end_date.strftime('%Y-%m-%d %H:%M %Z')}")
+    print(f"[Research] Date constraint: {start_date.strftime('%Y-%m-%d %H:%M %Z')} to {end_date.strftime('%Y-%m-%d %H:%M %Z')}")
 
     # Initialize per-ticker data: ticker -> list of (bullet, weight, source)
     ticker_data: Dict[str, List[tuple[str, float, ArticleSource]]] = {t: [] for t in tickers}
@@ -295,7 +279,7 @@ async def fetch_vital_knowledge_headlines_batch(
         # ========================================================================
         # STEP 2: NAVIGATE TO "EVERYTHING" TAB
         # ========================================================================
-        print("[VitalKnowledge] Navigating to 'Everything' tab...")
+        print("[Research] Navigating to 'Everything' tab...")
         await page.act("Click on the 'Everything' link or button in the navigation")
         await page.wait_for_load_state("networkidle", timeout=15000)
         await asyncio.sleep(2)
@@ -303,7 +287,7 @@ async def fetch_vital_knowledge_headlines_batch(
         # ========================================================================
         # STEP 3: EXTRACT ALL REPORT LINKS WITH DATES
         # ========================================================================
-        print("[VitalKnowledge] Extracting report links from Everything page...")
+        print("[Research] Extracting report links from Everything page...")
 
         class ReportLinksExtract(BaseModel):
             reports: List[ReportLink] = Field(..., description="List of all reports visible on the page")
@@ -311,12 +295,12 @@ async def fetch_vital_knowledge_headlines_batch(
         links_result = await page.extract(
             instruction="""
             On this Vital Knowledge "Everything" page, extract all visible report links.
-            
+
             For each report, extract:
             - title: The report title/headline
             - date_str: The full date and time string as shown (e.g., "Dec 3, 2025 05:20 AM")
             - category: The report category label (MORNING, MARKET CLOSE, INTRADAY, EARNINGS, etc.)
-            
+
             Include ALL reports visible on the page, regardless of category.
             """,
             schema=ReportLinksExtract,
@@ -324,14 +308,15 @@ async def fetch_vital_knowledge_headlines_batch(
 
         if not links_result or not links_result.reports:
             print("[VitalKnowledge] No reports found on Everything page")
+            from src.skills.vital_knowledge.research import VitalKnowledgeReport
             return [VitalKnowledgeReport(ticker=t) for t in tickers]
 
-        print(f"[VitalKnowledge] Found {len(links_result.reports)} total reports on page")
+        print(f"[Research] Found {len(links_result.reports)} total reports on page")
 
         # ========================================================================
         # STEP 4: PARSE DATES AND FILTER BY CONSTRAINT
         # ========================================================================
-        print("[VitalKnowledge] Parsing dates and filtering by constraint...")
+        print("[Research] Parsing dates and filtering by constraint...")
 
         valid_reports: List[ReportLink] = []
         for report in links_result.reports:
@@ -348,9 +333,10 @@ async def fetch_vital_knowledge_headlines_batch(
 
         if not valid_reports:
             print("[VitalKnowledge] No reports match the date constraint")
+            from src.skills.vital_knowledge.research import VitalKnowledgeReport
             return [VitalKnowledgeReport(ticker=t) for t in tickers]
 
-        print(f"[VitalKnowledge] {len(valid_reports)} reports match date constraint")
+        print(f"[Research] {len(valid_reports)} reports match date constraint")
 
         # ========================================================================
         # STEP 5: PROCESS EACH REPORT - EXTRACT FOR ALL TICKERS
@@ -358,7 +344,7 @@ async def fetch_vital_knowledge_headlines_batch(
         reports_processed = 0
 
         for i, report in enumerate(valid_reports):
-            print(f"\n[VitalKnowledge] Processing report {i+1}/{len(valid_reports)}: {report.title}")
+            print(f"\n[Research] Processing report {i+1}/{len(valid_reports)}: {report.title}")
 
             try:
                 # Click/open the report link
@@ -386,7 +372,7 @@ async def fetch_vital_knowledge_headlines_batch(
 
                 # Extract for each ticker
                 for ticker in tickers:
-                    print(f"  [VitalKnowledge] Extracting {ticker} from report...")
+                    print(f"  [Research] Extracting {ticker} from report...")
 
                     extract_result = await page.extract(
                         instruction=f"""{TICKER_EXTRACTION_INSTRUCTION}
@@ -410,7 +396,7 @@ async def fetch_vital_knowledge_headlines_batch(
 
                 # Navigate back to Everything page for next report
                 if i < len(valid_reports) - 1:
-                    print("[VitalKnowledge] Navigating back to Everything page...")
+                    print("[Research] Navigating back to Everything page...")
                     await page.goto("https://vitalknowledge.net/", wait_until="networkidle", timeout=15000)
                     await page.act("Click on the 'Everything' link or button in the navigation")
                     await page.wait_for_load_state("networkidle", timeout=15000)
@@ -423,12 +409,12 @@ async def fetch_vital_knowledge_headlines_batch(
         # ========================================================================
         # STEP 6: COMBINE AND WEIGHT RESULTS PER TICKER
         # ========================================================================
-        print(f"\n[VitalKnowledge] Combining results for {len(tickers)} tickers...")
+        print(f"\n[Research] Combining results for {len(tickers)} tickers...")
 
         ticker_results: List[TickerReport] = []
 
         for ticker in tickers:
-            print(f"\n[VitalKnowledge] Processing {ticker}...")
+            print(f"\n[Research] Processing {ticker}...")
 
             data = ticker_data[ticker]
 
@@ -457,7 +443,7 @@ async def fetch_vital_knowledge_headlines_batch(
             # Generate summary
             summary = None
             if top_bullets:
-                print(f"  [VitalKnowledge] Generating summary for {ticker}...")
+                print(f"  [Research] Generating summary for {ticker}...")
 
                 bullets_text = "\n".join(f"- {b}" for b in top_bullets)
 
@@ -499,237 +485,21 @@ async def fetch_vital_knowledge_headlines_batch(
         print(f"[VitalKnowledge] Failed: {e}")
         import traceback
         traceback.print_exc()
+        from src.skills.vital_knowledge.research import VitalKnowledgeReport
         return [VitalKnowledgeReport(ticker=t) for t in tickers]
-
-
-async def fetch_vital_knowledge_headlines(
-    page,
-    ticker: str,
-) -> VitalKnowledgeReport:
-    """
-    Fetch ticker-specific macro news from Vital Knowledge morning and market close reports.
-
-    This function:
-    1. Logs in to vitalknowledge.net
-    2. Navigates to morning reports and extracts ticker-specific news (max 5 bullets)
-    3. Navigates to market close reports and extracts ticker-specific news (max 5 bullets)
-    4. Combines bullets, sorts by importance, keeps top 5
-    5. Generates a very brief summary
-
-    Args:
-        page: A StagehandPage instance
-        ticker: Stock ticker symbol (e.g., "AAPL")
-
-    Returns:
-        VitalKnowledgeReport with headlines and summary
-    """
-    print(f"[VitalKnowledge] Starting scrape for {ticker}")
-
-    # Login
-    username = os.getenv("Vital_login")
-    password = os.getenv("Vital_password")
-
-    if not username or not password:
-        raise ValueError("Missing Vital_login or Vital_password in .env")
-
-    print("[VitalKnowledge] Navigating to login page...")
-    await page.goto("https://vitalknowledge.net/login", wait_until="networkidle", timeout=30000)
-
-    print("[VitalKnowledge] Entering credentials...")
-    await page.act(f"Enter '{username}' into the username or email input field")
-    await page.act(f"Enter '{password}' into the password input field")
-    await page.act("Click the login or sign in button")
-    await page.wait_for_load_state("networkidle", timeout=30000)
-    print("[VitalKnowledge] Login successful")
-
-    all_bullets: List[str] = []
-    report_dates: List[str] = []
-
-    try:
-        # ---------------------------------------------------------------------
-        # MORNING REPORT
-        # ---------------------------------------------------------------------
-        print("[VitalKnowledge] Navigating to morning reports...")
-        await page.act("Click on the 'morning' link or button in the navigation")
-        await page.wait_for_load_state("networkidle", timeout=15000)
-        
-        print("[VitalKnowledge] Clicking first morning report...")
-        await page.act("Click the first morning report link in the list to open it")
-        await asyncio.sleep(3)
-        await page.wait_for_load_state("networkidle", timeout=15000)
-        
-        # Extract date from URL
-        try:
-            if '/article/' in page.url:
-                date_parts = page.url.split('/article/')[1].split('/')[:3]
-                morning_date = '-'.join(date_parts)
-            else:
-                morning_date = datetime.now().strftime("%Y-%m-%d")
-        except Exception:
-            morning_date = datetime.now().strftime("%Y-%m-%d")
-        report_dates.append(morning_date)
-        print(f"[VitalKnowledge] Morning report date: {morning_date}")
-        
-        # Extract ticker-specific bullets from morning report
-        print(f"[VitalKnowledge] Extracting ticker-specific news from morning report...")
-        morning_bullets_result = await page.extract(
-            instruction=f"""
-            Read through this Vital Knowledge morning report.
-
-            Extract ONLY news that specifically impacts {ticker} stock.
-
-            Return up to 5 bullet points about {ticker}. Each bullet should be:
-            - Specific to {ticker} (not general market news)
-            - Concise but informative (1-2 sentences)
-            - Focused on what's driving {ticker} stock movement
-
-            If there is no news about {ticker} in this report, return an empty list.
-            """,
-            schema=ExtractedBullets,
-        )
-        
-        morning_bullets = morning_bullets_result.bullets if morning_bullets_result else []
-        print(f"[VitalKnowledge] Found {len(morning_bullets)} bullets in morning report")
-        all_bullets.extend(morning_bullets)
-
-        # ---------------------------------------------------------------------
-        # MARKET CLOSE REPORT
-        # ---------------------------------------------------------------------
-        print("[VitalKnowledge] Navigating to market close reports...")
-        await page.act("Click on the 'market close' link or button in the navigation")
-        await asyncio.sleep(2)
-        await page.wait_for_load_state("networkidle", timeout=15000)
-        
-        print("[VitalKnowledge] Clicking first market close report...")
-        await page.act("Click the first market close report link in the list to open it")
-        await asyncio.sleep(3)
-        await page.wait_for_load_state("networkidle", timeout=15000)
-        
-        # Extract date from URL
-        try:
-            if '/article/' in page.url:
-                date_parts = page.url.split('/article/')[1].split('/')[:3]
-                market_close_date = '-'.join(date_parts)
-            else:
-                market_close_date = datetime.now().strftime("%Y-%m-%d")
-        except Exception:
-            market_close_date = datetime.now().strftime("%Y-%m-%d")
-        
-        report_dates.append(market_close_date)
-        print(f"[VitalKnowledge] Market close report date: {market_close_date}")
-        
-        # Extract ticker-specific bullets from market close report
-        print(f"[VitalKnowledge] Extracting ticker-specific news from market close report...")
-        market_close_bullets_result = await page.extract(
-            instruction=f"""
-            Read through this Vital Knowledge market close report.
-
-            Extract ONLY news that specifically impacts {ticker} stock.
-
-            Return up to 5 bullet points about {ticker}. Each bullet should be:
-            - Specific to {ticker} (not general market news)
-            - Concise but informative (1-2 sentences)
-            - Focused on what's driving {ticker} stock movement
-
-            If there is no news about {ticker} in this report, return an empty list.
-            """,
-            schema=ExtractedBullets,
-        )
-        
-        market_close_bullets = market_close_bullets_result.bullets if market_close_bullets_result else []
-        print(f"[VitalKnowledge] Found {len(market_close_bullets)} bullets in market close report")
-        all_bullets.extend(market_close_bullets)
-
-        # ---------------------------------------------------------------------
-        # COMBINE AND SORT BULLETS BY IMPORTANCE (MAX 5 TOTAL)
-        # ---------------------------------------------------------------------
-        final_bullets: List[str] = []
-        
-        if all_bullets:
-            print(f"[VitalKnowledge] Combining {len(all_bullets)} bullets, sorting by importance...")
-            
-            # Have AI sort by importance and keep top 5
-            combined_result = await page.extract(
-                instruction=f"""
-                You have {len(all_bullets)} bullet points about {ticker} stock from morning and market close reports:
-
-                {chr(10).join(f"- {bullet}" for bullet in all_bullets)}
-
-                Sort these by importance (most market-moving first) and return the top 5 most important bullets.
-                If there are fewer than 5, return all of them.
-                """,
-                schema=CombinedBullets,
-            )
-            
-            final_bullets = combined_result.top_bullets[:5] if combined_result else []
-            print(f"[VitalKnowledge] Selected {len(final_bullets)} top bullets")
-
-        # ---------------------------------------------------------------------
-        # GENERATE VERY BRIEF SUMMARY
-        # ---------------------------------------------------------------------
-        summary = None
-        if final_bullets:
-            print("[VitalKnowledge] Generating brief summary...")
-            
-            bullets_text = "\n".join(f"- {bullet}" for bullet in final_bullets)
-            
-            summary = await page.extract(
-                instruction=f"""
-                Based on these Vital Knowledge bullets about {ticker}:
-
-                {bullets_text}
-
-                Provide:
-                - overall_sentiment: Must be exactly one of: "bullish", "bearish", "mixed", or "neutral"
-                - key_themes: List 2-3 main themes (e.g., ["earnings", "analyst upgrade"])
-                - summary: Write a very brief 1-2 sentence summary of the key points about {ticker}
-                """,
-                schema=VitalKnowledgeSummary,
-            )
-
-        # ---------------------------------------------------------------------
-        # CONVERT BULLETS TO HEADLINES FOR COMPATIBILITY
-        # ---------------------------------------------------------------------
-        headlines = [
-            VitalKnowledgeHeadline(
-                headline=bullet,
-                context=None,
-                sentiment=None,
-            )
-            for bullet in final_bullets
-        ]
-
-        # ---------------------------------------------------------------------
-        # RETURN RESULTS
-        # ---------------------------------------------------------------------
-        result = VitalKnowledgeReport(
-            ticker=ticker.upper(),
-            headlines=headlines,
-            report_dates=report_dates,
-            summary=summary,
-        )
-
-        print(f"\n[VitalKnowledge] Complete! {len(final_bullets)} bullets extracted for {ticker}")
-
-        return result
-
-    except Exception as e:
-        print(f"[VitalKnowledge] Failed for {ticker}: {e}")
-        return VitalKnowledgeReport(ticker=ticker.upper())
 
 
 # =============================================================================
 # STANDALONE TEST FUNCTION
 # =============================================================================
 
-async def test_vital_knowledge(tickers: List[str] = None):
+async def test_research(tickers: List[str] = None, days_back: int = 2):
     """
-    Test the Vital Knowledge scraper standalone with multiple tickers.
+    Test the Research scraper standalone.
 
-    Usage (from morning_report_copy directory):
-        python -m src.skills.vital_knowledge.research
-
-    Reads tickers from config/watchlist.json if not provided.
+    Usage (from project root):
+        python -m src.skills.vital_knowledge.research_test
+        python -m src.skills.vital_knowledge.research_test 3  # look back 3 days
     """
     import json
     from pathlib import Path
@@ -742,54 +512,42 @@ async def test_vital_knowledge(tickers: List[str] = None):
             tickers = json.load(f)
 
     print(f"\n{'='*60}")
-    print(f"Testing Vital Knowledge scraper for {len(tickers)} tickers")
+    print(f"Testing Vital Knowledge Research Scraper")
     print(f"Tickers: {tickers}")
+    print(f"Days back: {days_back}")
     print(f"{'='*60}\n")
 
     stagehand = None
-
     try:
         stagehand, page = await create_stagehand_session()
+        results = await fetch_vital_knowledge_headlines_batch(page, tickers, days_back=days_back)
 
-        # Use batch function to process all tickers from the same reports
         print(f"\n{'='*60}")
-        print(f"Processing all {len(tickers)} tickers in batch (same reports)")
+        print("RESULTS")
         print(f"{'='*60}\n")
 
-        all_results = await fetch_vital_knowledge_headlines_batch(page, tickers)
+        for result in results:
+            print(f"\n--- {result.ticker} ---")
+            print(f"Report dates: {result.report_dates}")
 
-        # Print results for each ticker
-        for result in all_results:
-            print(f"\n{'='*60}")
-            print(f"Results for {result.ticker}")
-            print(f"{'='*60}\n")
-            print(f"Report Dates: {result.report_dates}")
-            print(f"Bullets found: {len(result.headlines)}\n")
-
-            for i, headline in enumerate(result.headlines, 1):
-                print(f"Bullet {i}: {headline.headline}")
+            if result.headlines:
+                print(f"Headlines ({len(result.headlines)}):")
+                for i, headline in enumerate(result.headlines, 1):
+                    print(f"  {i}. {headline.headline}")
+            else:
+                print("  No news found")
 
             if result.summary:
-                print(f"\nSummary: {result.summary.summary}")
                 print(f"Sentiment: {result.summary.overall_sentiment}")
+                print(f"Themes: {result.summary.key_themes}")
+                print(f"Summary: {result.summary.summary}")
 
-        # Final summary
-        print(f"\n{'='*60}")
-        print("FINAL SUMMARY")
-        print(f"{'='*60}\n")
-
-        for result in all_results:
-            print(f"{result.ticker}: {len(result.headlines)} bullets")
-            if result.summary and result.summary.summary:
-                print(f"  > {result.summary.summary[:150]}...")
-            print()
-
-        return all_results
+        return results
 
     finally:
         if stagehand:
             await stagehand.close()
-            print(f"\n[VitalKnowledge] Browser session closed")
+            print("\n[Research] Browser session closed")
 
 
 # =============================================================================
@@ -797,9 +555,19 @@ async def test_vital_knowledge(tickers: List[str] = None):
 # =============================================================================
 
 if __name__ == "__main__":
-    import asyncio
+    import sys
     from dotenv import load_dotenv
 
     load_dotenv()
-    # Reads tickers from config/watchlist.json automatically
-    asyncio.run(test_vital_knowledge())
+
+    # Get days_back from .env (Vital_Days_Back), CLI arg, or default to 2
+    days_back = int(os.getenv("Vital_Days_Back", "2"))
+
+    # CLI argument overrides .env
+    if len(sys.argv) > 1:
+        try:
+            days_back = int(sys.argv[1])
+        except ValueError:
+            print(f"Invalid days_back argument: {sys.argv[1]}, using env value {days_back}")
+
+    asyncio.run(test_research(days_back=days_back))
