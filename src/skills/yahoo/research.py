@@ -4,6 +4,9 @@ from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
+from src.core.retry_helpers import navigate_with_retry
+from src.core.observability.errors import get_error_tracker
+
 
 class YahooAIAnalysis(BaseModel):
     """
@@ -24,10 +27,10 @@ async def fetch_yahoo_ai_analysis(page, ticker: str) -> YahooAIAnalysis:
     card for `ticker` and extract a compact summary plus bullet points.
     """
     url = f"https://finance.yahoo.com/quote/{ticker}"
-    
+
     # Always navigate to ensure clean page state (in case we're already on the page from quote extraction)
     # This ensures we start with a fresh page load
-    await page.goto(url, wait_until="load", timeout=30000)
+    await navigate_with_retry(page, url, max_retries=2, timeout=30000, wait_until="load")
     
     # Give the page a moment to fully render dynamic content
     try:
@@ -63,6 +66,13 @@ async def fetch_yahoo_ai_analysis(page, ticker: str) -> YahooAIAnalysis:
     except Exception as e:
         # If observe/act fails, we still try to extract text from whatever is visible
         print(f"[YahooAI] Could not open AI analysis panel (will try to extract anyway): {e}")
+        error_tracker = get_error_tracker()
+        error_tracker.record_error(
+            error=e,
+            component="YahooAI (src.skills.yahoo.research)",
+            context={"ticker": ticker, "phase": "open_ai_panel"},
+            failure_point="panel_open_failed",
+        )
 
     # Extract the analysis with better error handling
     # Wrap the entire extraction in a try/except to catch any API errors
@@ -98,6 +108,13 @@ async def fetch_yahoo_ai_analysis(page, ticker: str) -> YahooAIAnalysis:
         # This catches API errors, timeout errors, and any other extraction failures
         error_msg = str(e)
         print(f"[YahooAI] Extraction failed for {ticker}: {error_msg}")
+        error_tracker = get_error_tracker()
+        error_tracker.record_error(
+            error=e,
+            component="YahooAI (src.skills.yahoo.research)",
+            context={"ticker": ticker, "function": "fetch_yahoo_ai_analysis"},
+            failure_point="extraction_failed",
+        )
         # Return empty analysis - the calling code handles this gracefully
         return YahooAIAnalysis(
             ticker=ticker.upper(),

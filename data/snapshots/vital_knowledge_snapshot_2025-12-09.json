@@ -1,0 +1,167 @@
+{
+  "as_of": "2025-12-09",
+  "tickers": [
+    {
+      "ticker": "AMZN",
+      "error": null,
+      "vital_knowledge": {
+        "ticker": "AMZN",
+        "headlines": [
+          {
+            "headline": "AMZN is noted among pockets of tech stocks showing outperformance, indicating positive investor sentiment or relative strength in the sector for Amazon compared to peers.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "Amazon shares experienced pressure on Monday amid a fractured AI narrative, diverging from Nvidia's strong performance, signaling a potential headwind for AMZN's stock in the near term.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "AMZN was listed among tech stocks that underperformed on Monday, indicating investor caution or negative sentiment towards the company in the current market environment.",
+            "context": null,
+            "sentiment": null
+          }
+        ],
+        "report_dates": [
+          "2025-12-09",
+          "2025-12-08"
+        ],
+        "summary": {
+          "overall_sentiment": null,
+          "key_themes": [],
+          "summary": "Amazon (AMZN) is showing relative strength within the tech sector but faced stock pressure on Monday due to a fractured AI narrative, diverging from Nvidia's strong performance. Despite being noted among outperforming tech stocks, AMZN underperformed on Monday, reflecting investor caution in the current market environment."
+        }
+      }
+    },
+    {
+      "ticker": "NVDA",
+      "error": null,
+      "vital_knowledge": {
+        "ticker": "NVDA",
+        "headlines": [
+          {
+            "headline": "China is likely to impose limits on Nvidia's H200 chip purchases, requiring buyers to go through an approval process as Beijing encourages domestic technology use, which could restrict Nvidia's sales in China and impact revenue.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "Former President Trump confirmed on social media that he will allow Nvidia to sell its H200 chip to 'approved customers in China and other countries,' indicating regulatory approval that may enable Nvidia to maintain some access to the Chinese market despite restrictions.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "China is likely to impose limits on Nvidia's H200 chip purchases, requiring buyers to obtain approval outlining the necessity of the chip as Beijing advances plans to promote domestic technology use, which could restrict Nvidia's sales in the Chinese market.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "China is likely to impose limits on Nvidia's H200 chip purchases, requiring buyers to go through an approval process explaining why they need the chip, as part of Beijing's push to encourage domestic technology use. This matters because it could restrict Nvidia's sales in China, although the impact is not seen as massively negative. The issue is not the main concern for AI stocks currently, with bigger worries being the rise of competitors like Gemini/TPU and financial sustainability of startups. Nvidia's revenue from China is nearly zero, but the company still sells chips to Chinese companies, so restrictions could affect these sales. The H200 chip is considered far inferior to competitors Blackwell and Rubin, which may make Chinese buyers reluctant to purchase it, potentially limiting Nvidia's market share in China.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "Trump confirmed on social media that Nvidia is allowed to sell its H200 chip to approved customers in China and other countries, with the US Treasury taking a 25% cut of sales revenue; this approval is positive but the H200 is considered far inferior to Nvidia's Blackwell and Rubin chips, which may limit Chinese buyer interest.",
+            "context": null,
+            "sentiment": null
+          }
+        ],
+        "report_dates": [
+          "2025-12-09",
+          "2025-12-08"
+        ],
+        "summary": {
+          "overall_sentiment": null,
+          "key_themes": [],
+          "summary": "China is expected to impose approval-based limits on Nvidia's H200 chip purchases to promote domestic technology, potentially restricting Nvidia's sales in China. Former President Trump confirmed Nvidia can sell the H200 chip to approved customers in China and other countries, with the US Treasury taking a revenue cut. However, the H200 chip is considered inferior to competitors, which may limit Chinese buyer interest and impact Nvidia's market share and revenue in China."
+        }
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "error": null,
+      "vital_knowledge": {
+        "ticker": "MSFT",
+        "headlines": [
+          {
+            "headline": "Microsoft is reportedly considering shifting its AI chip business to Broadcom, which could impact its hardware strategy and partnerships in the AI sector. This matters as it may affect Microsoft's competitive positioning in AI hardware development.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "A report from Benchmark alleges that Marvell lost the Trainium 3 and 4 business to Alchip, which is relevant since Microsoft has ties to AI chip development; this could influence Microsoft's chip supply and AI capabilities.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "There is no direct mention of Microsoft (MSFT) earnings, price targets, or analyst ratings in the report, indicating no new financial updates impacting MSFT at this time.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "No sector news specifically naming or impacting Microsoft was found in the report, suggesting no immediate sector-level developments affecting MSFT.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "No news about Microsoft executives, products, or services beyond the AI chip business shift was found, indicating limited new company-specific updates.",
+            "context": null,
+            "sentiment": null
+          }
+        ],
+        "report_dates": [
+          "2025-12-09",
+          "2025-12-08"
+        ],
+        "summary": {
+          "overall_sentiment": null,
+          "key_themes": [],
+          "summary": "Microsoft is reportedly considering shifting its AI chip business to Broadcom, potentially impacting its AI hardware strategy. Additionally, Marvell lost the Trainium 3 and 4 business to Alchip, which may influence Microsoft's AI chip supply. There are no new earnings, price targets, or analyst ratings updates for Microsoft at this time."
+        }
+      }
+    },
+    {
+      "ticker": "GOOGL",
+      "error": null,
+      "vital_knowledge": {
+        "ticker": "GOOGL",
+        "headlines": [
+          {
+            "headline": "GOOGL (Google) faces a fresh antitrust probe in the EU over the firm's AI practices, which could lead to regulatory challenges and impact its AI business operations.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "GOOGL plans to incorporate ads into its Gemini AI chatbot next year, signaling a new revenue stream that could enhance monetization of its AI products.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "GOOGL's Waymo autonomous driving service is now providing approximately 450,000 rides per week, up from 250,000 six months ago, indicating rapid growth in its self-driving business segment.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "Google plans to launch smart glasses next year to compete with similar products from Meta, signaling an expansion in its hardware offerings which could diversify revenue streams and enhance its competitive position in the AR/VR market.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "Google faces a fresh antitrust probe in the EU over its AI practices, which could lead to regulatory challenges and potential fines, impacting its operations and stock performance.",
+            "context": null,
+            "sentiment": null
+          }
+        ],
+        "report_dates": [
+          "2025-12-09",
+          "2025-12-08"
+        ],
+        "summary": {
+          "overall_sentiment": null,
+          "key_themes": [],
+          "summary": "Google (GOOGL) is facing a new antitrust investigation in the EU related to its AI practices, which poses regulatory risks. Meanwhile, the company is expanding its AI monetization by planning to add ads to its Gemini AI chatbot, growing its Waymo autonomous rides significantly, and preparing to launch smart glasses to compete in the AR/VR market."
+        }
+      }
+    }
+  ]
+}

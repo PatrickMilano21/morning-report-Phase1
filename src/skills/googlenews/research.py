@@ -3,6 +3,9 @@ from datetime import datetime, timedelta
 import asyncio
 from pydantic import BaseModel, Field, ConfigDict
 
+from src.core.retry_helpers import navigate_with_retry
+from src.core.observability.errors import get_error_tracker
+
 
 class GoogleNewsStory(BaseModel):
     """News article with URL and summary."""
@@ -82,7 +85,7 @@ async def fetch_google_news_stories(
     stories: List[GoogleNewsStory] = []
 
     try:
-        await page.goto(url, wait_until="networkidle", timeout=30000)
+        await navigate_with_retry(page, url, max_retries=2, timeout=30000, wait_until="networkidle")
         print(f"[GoogleNews] News results loaded")
         # ---------------------------------------------------------------------
         # Use a hybrid approach: Stagehand extract() for content, observe() for URLs
@@ -161,7 +164,7 @@ async def fetch_google_news_stories(
 
             try:
                 # Navigate directly to article URL (no clicking, no going back)
-                await page.goto(article.url, wait_until="load", timeout=30000)
+                await navigate_with_retry(page, article.url, max_retries=2, timeout=30000, wait_until="load")
                 print(f"[GoogleNews] [{i+1}] Page loaded")
 
                 # Extract summary
@@ -195,6 +198,13 @@ async def fetch_google_news_stories(
 
             except Exception as e:
                 print(f"[GoogleNews] ERROR processing article: {e}")
+                error_tracker = get_error_tracker()
+                error_tracker.record_error(
+                    error=e,
+                    component="GoogleNews (src.skills.googlenews.research)",
+                    context={"ticker": ticker, "article_headline": article.headline, "article_url": article.url},
+                    failure_point="article_processing",
+                )
                 # Still add article with basic info
                 stories.append(GoogleNewsStory(
                     headline=article.headline,
@@ -240,9 +250,23 @@ async def fetch_google_news_stories(
                     )
                 except Exception as summary_error:
                     print(f"[GoogleNews] Error generating summary (continuing with stories): {summary_error}")
+                    error_tracker = get_error_tracker()
+                    error_tracker.record_error(
+                        error=summary_error,
+                        component="GoogleNews (src.skills.googlenews.research)",
+                        context={"ticker": ticker, "phase": "overall_summary_generation"},
+                        failure_point="summary_extraction",
+                    )
                     overall = None
         except Exception as e:
             print(f"[GoogleNews] Error in summary generation section (continuing with stories): {e}")
+            error_tracker = get_error_tracker()
+            error_tracker.record_error(
+                error=e,
+                component="GoogleNews (src.skills.googlenews.research)",
+                context={"ticker": ticker, "phase": "summary_section"},
+                failure_point="summary_section_error",
+            )
             overall = None
 
         # ---------------------------------------------------------------------
@@ -262,6 +286,13 @@ async def fetch_google_news_stories(
 
     except Exception as e:
         print(f"[GoogleNews] Fatal error for {ticker}: {e}")
+        error_tracker = get_error_tracker()
+        error_tracker.record_error(
+            error=e,
+            component="GoogleNews (src.skills.googlenews.research)",
+            context={"ticker": ticker, "function": "fetch_google_news_stories", "stories_collected": len(stories) if stories else 0},
+            failure_point="fatal_error",
+        )
         # Return whatever stories we managed to collect before the fatal error
         # This ensures we don't lose all the work if something crashes late
         if stories:

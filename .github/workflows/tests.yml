@@ -1,0 +1,51 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  # Optional: Run on a schedule (e.g., daily)
+  # schedule:
+  #   - cron: '0 0 * * *'  # Run at midnight UTC daily
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install pytest pytest-asyncio
+      
+      - name: Run unit tests
+        run: |
+          pytest tests/unit/ -v
+        continue-on-error: true  # Don't fail if no unit tests yet
+      
+      - name: Run integration tests
+        run: |
+          pytest tests/integration/ -v
+        continue-on-error: true  # Don't fail if no integration tests yet
+      
+      - name: Run E2E tests
+        env:
+          BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
+          BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          VITAL_LOGIN: ${{ secrets.VITAL_LOGIN }}
+          VITAL_PASSWORD: ${{ secrets.VITAL_PASSWORD }}
+        run: |
+          pytest tests/e2e/ -v -m e2e
+        continue-on-error: true  # Optional: Don't fail on E2E tests (they cost money)
+

@@ -133,7 +133,13 @@ def save_baseline_metrics(step: int = 0, name: str = "baseline"):
     }
 
     metrics_path.write_text(json.dumps(baseline, indent=2))
+
+    # Save human-readable .txt summary
+    txt_path = METRICS_DIR / f"{step:03d}_{name}.txt"
+    txt_path.write_text(_format_metrics_txt(baseline))
+
     print(f"\n[Metrics] Saved to: {metrics_path}")
+    print(f"[Metrics] Summary: {txt_path}")
     print(f"  Sessions: {len(run_metrics['sessions'])}")
     print(f"  Success: {run_metrics['success_count']}, Errors: {run_metrics['error_count']}")
     print(f"  LLM Tokens: {run_metrics['llm_tokens']['total_prompt_tokens']:,} prompt + {run_metrics['llm_tokens']['total_completion_tokens']:,} completion")
@@ -144,6 +150,80 @@ def save_baseline_metrics(step: int = 0, name: str = "baseline"):
         print(f"  Quality Metrics:")
         for ticker, quality in run_metrics["quality"]["per_ticker"].items():
             print(f"    {ticker}: {quality['googlenews_articles']} articles, {quality['yahoo_ai_bullets']} AI bullets, {quality['vital_knowledge_headlines']} VK headlines")
+
+
+def _format_metrics_txt(baseline: dict) -> str:
+    """Format metrics as human-readable text summary."""
+    m = baseline["metrics"]
+    lines = [
+        "=" * 60,
+        f"METRICS SUMMARY: {baseline['name'].upper()}",
+        "=" * 60,
+        "",
+        f"Timestamp: {baseline['timestamp']}",
+        "",
+        "--- OVERVIEW ---",
+        f"Wall Clock Duration: {m['timing']['wall_clock_duration_sec']:.1f} seconds ({m['timing']['wall_clock_duration_sec']/60:.1f} min)",
+        f"Sessions: {m['reliability']['session_count']}",
+        f"Success Rate: {m['reliability']['success_rate']*100:.0f}% ({m['reliability']['success_count']} success, {m['reliability']['error_count']} errors)",
+        "",
+        "--- LLM TOKENS ---",
+        f"Prompt Tokens: {m['llm_tokens']['total_prompt_tokens']:,}",
+        f"Completion Tokens: {m['llm_tokens']['total_completion_tokens']:,}",
+        f"Total Tokens: {m['llm_tokens']['total_prompt_tokens'] + m['llm_tokens']['total_completion_tokens']:,}",
+        f"Inference Time: {m['llm_tokens']['total_inference_time_ms']/1000:.1f} seconds",
+        "",
+    ]
+
+    # Quality metrics per ticker
+    if m.get("quality", {}).get("per_ticker"):
+        lines.append("--- QUALITY PER TICKER ---")
+        for ticker, q in m["quality"]["per_ticker"].items():
+            lines.append(f"  {ticker}:")
+            lines.append(f"    GoogleNews Articles: {q.get('googlenews_articles', 0)}")
+            lines.append(f"    Yahoo AI Bullets: {q.get('yahoo_ai_bullets', 0)}")
+            lines.append(f"    VitalKnowledge Headlines: {q.get('vital_knowledge_headlines', 0)}")
+        lines.append("")
+
+    # Per-source timing breakdown
+    lines.append("--- TIMING BY SOURCE ---")
+    per_source = m["timing"].get("per_source", {})
+
+    for source_name, source_data in per_source.items():
+        if source_name == "VitalKnowledge":
+            # VitalKnowledge has batch structure
+            if "batch" in source_data:
+                batch = source_data["batch"]
+                lines.append(f"  {source_name} (batch):")
+                lines.append(f"    Duration: {batch.get('duration_sec', 0):.1f}s")
+                lines.append(f"    Tickers: {', '.join(batch.get('tickers', []))}")
+                tokens = batch.get("llm_tokens", {})
+                lines.append(f"    Tokens: {tokens.get('prompt_tokens', 0):,} prompt + {tokens.get('completion_tokens', 0):,} completion")
+        elif source_name == "MacroNews":
+            # MacroNews has flat structure
+            lines.append(f"  {source_name}:")
+            lines.append(f"    Duration: {source_data.get('duration_sec', 0):.1f}s")
+            tokens = source_data.get("llm_tokens", {})
+            lines.append(f"    Tokens: {tokens.get('prompt_tokens', 0):,} prompt + {tokens.get('completion_tokens', 0):,} completion")
+        else:
+            # Per-ticker sources (YahooQuote, YahooAI, GoogleNews)
+            lines.append(f"  {source_name}:")
+            for ticker, ticker_data in source_data.items():
+                if isinstance(ticker_data, dict):
+                    lines.append(f"    {ticker}: {ticker_data.get('duration_sec', 0):.1f}s")
+
+    lines.append("")
+    lines.append("--- SESSIONS ---")
+    for detail in m.get("browserbase", {}).get("sessions_detail", [])[:10]:  # Show first 10
+        ticker_info = detail.get("ticker", detail.get("tickers", ""))
+        if isinstance(ticker_info, list):
+            ticker_info = ", ".join(ticker_info)
+        lines.append(f"  {detail.get('source', 'Unknown')}: {ticker_info} - {detail.get('status', 'Unknown')}")
+
+    if len(m.get("browserbase", {}).get("sessions_detail", [])) > 10:
+        lines.append(f"  ... and {len(m['browserbase']['sessions_detail']) - 10} more sessions")
+
+    return "\n".join(lines)
 
 
 def _env_flag(name: str, default: bool = True) -> bool:
@@ -190,7 +270,10 @@ async def _run_source_with_session(
             # GUARDRAIL: Session Creation
             try:
                 with GuardrailTimer("session_creation") as session_timer:
-                    stagehand, page = await create_stagehand_session()
+                    stagehand, page = await create_stagehand_session(
+                        source=source_name,
+                        ticker=ticker,
+                    )
                 all_diagnostics.update(session_timer.get_diagnostics())
 
                 if is_guardrails_enabled():
@@ -234,11 +317,45 @@ async def _run_source_with_session(
 
             if source_name not in run_metrics["timing"]["per_source"]:
                 run_metrics["timing"]["per_source"][source_name] = {}
+
+            # Build per-article metrics based on source type
+            article_metadata = None
+            if source_name == "GoogleNews" and result:
+                article_metadata = {
+                    "type": "articles",
+                    "count": len(result.stories) if result.stories else 0,
+                    "articles": [
+                        {
+                            "headline": s.headline,
+                            "url": s.url,
+                            "source": s.source,
+                            "sentiment": s.sentiment,
+                            "has_summary": bool(s.summary and not s.summary.startswith("Error")),
+                        }
+                        for s in (result.stories or [])
+                    ]
+                }
+            elif source_name == "YahooAI" and result:
+                article_metadata = {
+                    "type": "ai_analysis",
+                    "bullet_count": len(result.bullets) if result.bullets else 0,
+                }
+            elif source_name == "MarketWatch" and result:
+                article_metadata = {
+                    "type": "stories",
+                    "count": len(result.stories) if result.stories else 0,
+                }
+
             run_metrics["timing"]["per_source"][source_name][ticker] = {
                 "duration_sec": round(duration, 1),
                 "session_id": session_id,
                 "llm_tokens": llm_metrics,
             }
+
+            # Add article metadata if available
+            if article_metadata:
+                run_metrics["timing"]["per_source"][source_name][ticker]["articles"] = article_metadata
+
             run_metrics["sessions"].append(session_id)
             run_metrics["success_count"] += 1
 
@@ -258,12 +375,16 @@ async def _run_source_with_session(
         diagnostics = all_diagnostics if all_diagnostics else None
         failure_point = getattr(e, 'failure_point', failure_point)
 
+        # Get session_id for debugging via Browserbase Session Inspector
+        session_id = getattr(stagehand, 'session_id', None) if stagehand else None
+
         error_tracker.record_error(
             error=e,
             component=f"{source_name} ({fetch_func.__module__})",  # e.g., "YahooQuote (src.skills.yahoo.quote)"
             context={"ticker": ticker, "source": source_name, "function": fetch_func.__name__},
             diagnostics=diagnostics,
             failure_point=failure_point,
+            session_id=session_id,
         )
         run_metrics["error_count"] += 1
         return None
@@ -281,7 +402,9 @@ async def fetch_macro_news_with_session():
     start_time = time.time()
     try:
         from src.core.stagehand_runner import create_stagehand_session
-        stagehand, page = await create_stagehand_session()
+        stagehand, page = await create_stagehand_session(
+            source="MacroNews",
+        )
         # Get days_back from env var, default to 2
         days_back = int(os.getenv("Vital_Days_Back", "2"))
         result = await fetch_macro_news(page, days_back=days_back)
@@ -307,11 +430,32 @@ async def fetch_macro_news_with_session():
 
         print(f"[Metrics] MacroNews: {duration:.1f}s, tokens={llm_metrics['prompt_tokens']}+{llm_metrics['completion_tokens']}, session={session_id}")
 
+        # Build article metadata for MacroNews
+        article_metadata = None
+        if result:
+            article_metadata = {
+                "type": "macro_reports",
+                "report_count": result.report_count if hasattr(result, 'report_count') else 0,
+                "bullet_count": len(result.bullets) if result.bullets else 0,
+                "sources": [
+                    {
+                        "title": s.title,
+                        "date_str": s.date_str,
+                        "category": s.category,
+                    }
+                    for s in (result.sources or [])
+                ] if hasattr(result, 'sources') else [],
+            }
+
         run_metrics["timing"]["per_source"]["MacroNews"] = {
             "duration_sec": round(duration, 1),
             "session_id": session_id,
             "llm_tokens": llm_metrics,
         }
+
+        if article_metadata:
+            run_metrics["timing"]["per_source"]["MacroNews"]["articles"] = article_metadata
+
         run_metrics["sessions"].append(session_id)
         run_metrics["success_count"] += 1
 
@@ -320,10 +464,13 @@ async def fetch_macro_news_with_session():
         print(f"[ERROR] Macro News failed: {e}")
         run_metrics["error_count"] += 1
         error_tracker = get_error_tracker()
+        # Get session_id for debugging via Browserbase Session Inspector
+        session_id = getattr(stagehand, 'session_id', None) if stagehand else None
         error_tracker.record_error(
             error=e,
             component="fetch_macro_news_with_session",
             context={"source": "MacroNews"},
+            session_id=session_id,
         )
         return None
     finally:
@@ -340,7 +487,10 @@ async def _run_vital_knowledge_batch(tickers: list[str]):
     start_time = time.time()
     try:
         from src.core.stagehand_runner import create_stagehand_session
-        stagehand, page = await create_stagehand_session()
+        stagehand, page = await create_stagehand_session(
+            source="VitalKnowledge",
+            ticker=",".join(tickers),  # e.g., "NVDA,AAPL,MSFT,GOOGL"
+        )
         # Get days_back from env var, default to 2 (same as macro_news)
         days_back = int(os.getenv("Vital_Days_Back", "2"))
         results = await fetch_vital_knowledge_headlines_batch(page, tickers, days_back=days_back)
@@ -367,12 +517,29 @@ async def _run_vital_knowledge_batch(tickers: list[str]):
 
         print(f"[Metrics] VitalKnowledge/batch: {duration:.1f}s, tokens={llm_metrics['prompt_tokens']}+{llm_metrics['completion_tokens']}, session={session_id}")
 
+        # Build per-ticker article metadata for VitalKnowledge batch
+        article_metadata = {}
+        for result in results:
+            if result and result.headlines:
+                article_metadata[result.ticker] = {
+                    "type": "headlines",
+                    "count": len(result.headlines),
+                    "headlines": [
+                        {
+                            "headline": h.headline,
+                            "sentiment": h.sentiment,
+                        }
+                        for h in result.headlines
+                    ]
+                }
+
         run_metrics["timing"]["per_source"]["VitalKnowledge"] = {
             "batch": {
                 "duration_sec": round(duration, 1),
                 "session_id": session_id,
                 "tickers": tickers,
                 "llm_tokens": llm_metrics,
+                "articles": article_metadata,
             }
         }
         run_metrics["sessions"].append(session_id)
@@ -383,10 +550,13 @@ async def _run_vital_knowledge_batch(tickers: list[str]):
         print(f"[ERROR] Vital Knowledge batch failed: {e}")
         run_metrics["error_count"] += 1
         error_tracker = get_error_tracker()
+        # Get session_id for debugging via Browserbase Session Inspector
+        session_id = getattr(stagehand, 'session_id', None) if stagehand else None
         error_tracker.record_error(
             error=e,
             component="_run_vital_knowledge_batch",
             context={"tickers": tickers, "source": "VitalKnowledge"},
+            session_id=session_id,
         )
         return {}
     finally:
@@ -406,7 +576,9 @@ async def _warm_up_yahoo_selector():
 
     stagehand = None
     try:
-        stagehand, page = await create_stagehand_session()
+        stagehand, page = await create_stagehand_session(
+            source="YahooQuote_Warmup",
+        )
         await page.goto("https://finance.yahoo.com/quote/AAPL", timeout=30000)
         selector = await _get_or_discover_selector(page, CACHE_KEY)
         if selector:

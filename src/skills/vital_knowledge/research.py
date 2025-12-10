@@ -14,6 +14,9 @@ from typing import List, Optional, Literal, Dict
 from pydantic import BaseModel, Field, ConfigDict
 from zoneinfo import ZoneInfo
 
+from src.core.retry_helpers import navigate_with_retry, extract_with_retry
+from src.core.observability.errors import get_error_tracker
+
 
 # =============================================================================
 # DATA MODELS (Pydantic)
@@ -275,7 +278,7 @@ async def fetch_vital_knowledge_headlines_batch(
         raise ValueError("Missing Vital_login or Vital_password in .env")
 
     print("[VitalKnowledge] Navigating to login page...")
-    await page.goto("https://vitalknowledge.net/login", wait_until="networkidle", timeout=30000)
+    await navigate_with_retry(page, "https://vitalknowledge.net/login", max_retries=2, timeout=30000, wait_until="networkidle")
 
     print("[VitalKnowledge] Entering credentials...")
     await page.act(f"Enter '{username}' into the username or email input field")
@@ -388,7 +391,8 @@ async def fetch_vital_knowledge_headlines_batch(
                 for ticker in tickers:
                     print(f"  [VitalKnowledge] Extracting {ticker} from report...")
 
-                    extract_result = await page.extract(
+                    extract_result = await extract_with_retry(
+                        page,
                         instruction=f"""{TICKER_EXTRACTION_INSTRUCTION}
 
                         TICKER TO FIND: {ticker}
@@ -397,6 +401,7 @@ async def fetch_vital_knowledge_headlines_batch(
                         If there is no news about {ticker}, return an empty list.
                         """,
                         schema=TickerBullets,
+                        max_retries=1,
                     )
 
                     if extract_result and extract_result.bullets:
@@ -411,13 +416,20 @@ async def fetch_vital_knowledge_headlines_batch(
                 # Navigate back to Everything page for next report
                 if i < len(valid_reports) - 1:
                     print("[VitalKnowledge] Navigating back to Everything page...")
-                    await page.goto("https://vitalknowledge.net/", wait_until="networkidle", timeout=15000)
+                    await navigate_with_retry(page, "https://vitalknowledge.net/", max_retries=2, timeout=15000, wait_until="networkidle")
                     await page.act("Click on the 'Everything' link or button in the navigation")
                     await page.wait_for_load_state("networkidle", timeout=15000)
                     await asyncio.sleep(2)
 
             except Exception as e:
                 print(f"  [ERROR] Error processing report: {e}")
+                error_tracker = get_error_tracker()
+                error_tracker.record_error(
+                    error=e,
+                    component="VitalKnowledge (src.skills.vital_knowledge.research)",
+                    context={"report_title": report.title, "report_index": i, "tickers": tickers},
+                    failure_point="report_processing",
+                )
                 continue
 
         # ========================================================================
@@ -477,6 +489,13 @@ async def fetch_vital_knowledge_headlines_batch(
                     )
                 except Exception as e:
                     print(f"    [WARN] Could not generate summary: {e}")
+                    error_tracker = get_error_tracker()
+                    error_tracker.record_error(
+                        error=e,
+                        component="VitalKnowledge (src.skills.vital_knowledge.research)",
+                        context={"ticker": ticker, "phase": "summary_generation"},
+                        failure_point="summary_extraction",
+                    )
 
             ticker_results.append(TickerReport(
                 ticker=ticker,
@@ -499,6 +518,13 @@ async def fetch_vital_knowledge_headlines_batch(
         print(f"[VitalKnowledge] Failed: {e}")
         import traceback
         traceback.print_exc()
+        error_tracker = get_error_tracker()
+        error_tracker.record_error(
+            error=e,
+            component="VitalKnowledge (src.skills.vital_knowledge.research)",
+            context={"tickers": tickers, "function": "fetch_vital_knowledge_headlines_batch"},
+            failure_point="batch_fetch_failed",
+        )
         return [VitalKnowledgeReport(ticker=t) for t in tickers]
 
 
@@ -533,7 +559,7 @@ async def fetch_vital_knowledge_headlines(
         raise ValueError("Missing Vital_login or Vital_password in .env")
 
     print("[VitalKnowledge] Navigating to login page...")
-    await page.goto("https://vitalknowledge.net/login", wait_until="networkidle", timeout=30000)
+    await navigate_with_retry(page, "https://vitalknowledge.net/login", max_retries=2, timeout=30000, wait_until="networkidle")
 
     print("[VitalKnowledge] Entering credentials...")
     await page.act(f"Enter '{username}' into the username or email input field")
@@ -715,6 +741,13 @@ async def fetch_vital_knowledge_headlines(
 
     except Exception as e:
         print(f"[VitalKnowledge] Failed for {ticker}: {e}")
+        error_tracker = get_error_tracker()
+        error_tracker.record_error(
+            error=e,
+            component="VitalKnowledge (src.skills.vital_knowledge.research)",
+            context={"ticker": ticker, "function": "fetch_vital_knowledge_headlines"},
+            failure_point="single_ticker_fetch_failed",
+        )
         return VitalKnowledgeReport(ticker=ticker.upper())
 
 

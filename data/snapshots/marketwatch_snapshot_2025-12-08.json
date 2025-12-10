@@ -1,13 +1,8 @@
 {
-  "as_of": "2025-11-20",
+  "as_of": "2025-12-08",
   "tickers": [
     {
-      "ticker": "AAPL",
-      "error": null,
-      "marketwatch": null
-    },
-    {
-      "ticker": "GOOGL",
+      "ticker": "AMZN",
       "error": null,
       "marketwatch": null
     },
@@ -17,7 +12,12 @@
       "marketwatch": null
     },
     {
-      "ticker": "AMZN",
+      "ticker": "MSFT",
+      "error": null,
+      "marketwatch": null
+    },
+    {
+      "ticker": "GOOGL",
       "error": null,
       "marketwatch": null
     }

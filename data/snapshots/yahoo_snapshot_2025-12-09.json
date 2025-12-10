@@ -1,0 +1,134 @@
+{
+  "as_of": "2025-12-09",
+  "tickers": [
+    {
+      "ticker": "AMZN",
+      "error": null,
+      "quote": {
+        "ticker": "AMZN",
+        "last_price": 227.89,
+        "change_abs": 1.0,
+        "change_pct": 0.44,
+        "currency": "USD",
+        "open_price": 226.68,
+        "previous_close": 226.89,
+        "day_low": 225.11,
+        "day_high": 228.57,
+        "volume": 10346776,
+        "avg_volume": 48840734,
+        "premarket_change_pct": null,
+        "after_hours_change_pct": null
+      },
+      "analysis": {
+        "ticker": "AMZN",
+        "title": "AI Analysis",
+        "updated_at": "Updated 9m ago",
+        "summary": "Amazon is showing strong revenue growth and solid profitability, with analysts optimistic about its future prospects. Recent insider selling activity and labor union developments are notable, alongside strategic AI partnerships enhancing its competitive position. Overall, the outlook remains positive with substantial upside potential.",
+        "bullets": [
+          "Revenue growth accelerated to 11.48% in Q3 2025, up from 10.87% in Q2 2025, indicating strong demand.",
+          "Analysts are bullish with price targets ranging from $244 to $340, well above the current price of $226.89; recent upgrades from Wedbush and Cantor Fitzgerald support this view.",
+          "Operating margin remains stable at 11.02%, slightly down from 11.37% in Q2 2025, while return on assets improved to 11.65%, showing effective asset use.",
+          "Insiders executed 13 stock sales totaling over $11 million and 12 stock conversions across 25 transactions; notable sales include David Zapolsky selling 13,570 shares for over $3 million.",
+          "Amazon's New York drivers unionized with the Teamsters Union, marking a significant labor relations development.",
+          "Partnerships with companies like Reply and Rubrik for AI solutions enhance Amazon's governance and operational capabilities, strengthening its tech industry position."
+        ]
+      }
+    },
+    {
+      "ticker": "NVDA",
+      "error": null,
+      "quote": {
+        "ticker": "NVDA",
+        "last_price": 184.36,
+        "change_abs": -1.21,
+        "change_pct": -0.65,
+        "currency": "USD",
+        "open_price": 185.56,
+        "previous_close": 185.57,
+        "day_low": 183.32,
+        "day_high": 185.72,
+        "volume": 104641164,
+        "avg_volume": 191231363,
+        "premarket_change_pct": null,
+        "after_hours_change_pct": null
+      },
+      "analysis": {
+        "ticker": "NVDA",
+        "title": "Overview",
+        "updated_at": "Updated 14m ago",
+        "summary": "Nvidia (NVDA) is experiencing mixed investor sentiment due to significant developments including approval for its H200 chip sales to China, strong Q3 revenue results, but concerns about competition and regulatory challenges. Analysts remain optimistic with varied price targets indicating potential upside. The stock has seen fluctuations amid broader market trends influenced by upcoming Federal Reserve decisions and labor market data.",
+        "bullets": [
+          "Retail investor sentiment has cooled, with sentiment score dropping from 64 to 53 due to concerns over competition and regulations.",
+          "Revenue growth slowed from 71.55% in Q2 2026 to 65.22% in Q3 2026, indicating a moderation in growth rates.",
+          "Nvidia's venture arm, NVentures, participated in a $140 million funding round for AI-driven media technology company fal.",
+          "Shares slipped 0.5% as market reactions to chip sales approval to China remain mixed.",
+          "Valuation metrics improved with P/E ratio decreasing from 48.89x in Q2 2026 to 45.63x in Q3 2026 and EV/EBITDA dropping from 41.39x to 38.29x."
+        ]
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "error": null,
+      "quote": {
+        "ticker": "MSFT",
+        "last_price": 490.27,
+        "change_abs": -0.75,
+        "change_pct": -0.15,
+        "currency": "USD",
+        "open_price": 489.34,
+        "previous_close": 491.02,
+        "day_low": 488.5,
+        "day_high": 492.1,
+        "volume": 7328631,
+        "avg_volume": 22282028,
+        "premarket_change_pct": null,
+        "after_hours_change_pct": null
+      },
+      "analysis": {
+        "ticker": "MSFT",
+        "title": "AI Analysis",
+        "updated_at": "Updated 13m ago",
+        "summary": "Microsoft (MSFT) is experiencing positive analyst sentiment fueled by strategic updates and significant investments in AI infrastructure, despite concerns over rising capital expenditures. The company maintains a strong market position with robust growth metrics and supportive insider activity.",
+        "bullets": [
+          "Analysts maintain a bullish outlook, with price targets from Bernstein and Evercore ISI Group ranging from $600 to $650, significantly above the current market price of $491.02.",
+          "The P/E ratio stands at 36.70x in FY 2026 Q1, slightly up from 36.31x in FY 2025 Q4, while the EV/EBITDA ratio decreased from 23.01x to 22.57x, suggesting a more attractive valuation.",
+          "The competitive landscape is intensifying, with Microsoft, Amazon, and Alphabet heavily investing in AI infrastructure to secure market advantages.",
+          "On December 4, 2025, Microsoft insiders reported 12 transactions: 11 awards (at $0 value) and 1 sale totaling $1,364,352 by Takeshi Numoto, indicating routine activity with no anomalies.",
+          "Microsoft's capital expenditures surged 74% year-over-year, reaching $34.9 billion, highlighting its commitment to AI infrastructure but raising sustainability concerns."
+        ]
+      }
+    },
+    {
+      "ticker": "GOOGL",
+      "error": null,
+      "quote": {
+        "ticker": "GOOGL",
+        "last_price": 317.09,
+        "change_abs": 3.37,
+        "change_pct": 1.07,
+        "currency": "USD",
+        "open_price": 312.37,
+        "previous_close": 313.72,
+        "day_low": 311.89,
+        "day_high": 317.99,
+        "volume": 18006463,
+        "avg_volume": 36626288,
+        "premarket_change_pct": null,
+        "after_hours_change_pct": null
+      },
+      "analysis": {
+        "ticker": "GOOGL",
+        "title": "AI Analysis",
+        "updated_at": "Updated 17m ago",
+        "summary": "Alphabet (GOOGL) has seen a 79% increase in stock value over the past year, driven by aggressive AI initiatives. Despite this growth, the company faces ongoing regulatory scrutiny in Europe that could impact its operations. Analysts remain optimistic about Alphabet's growth prospects fueled by strong cloud momentum and AI advancements, even as challenges from EU investigations persist.",
+        "bullets": [
+          "AI-Driven Growth: Alphabet's focus on AI in search and cloud services has boosted stock performance and investor confidence.",
+          "Valuation Metrics: P/E ratio rose from 18.49x in Q2 2025 to 23.66x in Q3 2025, showing increased investor willingness to pay for earnings.",
+          "Regulatory Challenges: European Commission's investigation into Google's AI practices may affect operations and market position.",
+          "Stock Performance Insights: The stock's 79% increase over the last year is attributed to AI advancements and strong market positioning.",
+          "Insider Transaction Activity: Insiders completed 8 stock sales totaling over $10 million on December 3, 2025, all by CEO Sundar Pichai, including a notably large sale of over $3.3 million."
+        ]
+      }
+    }
+  ]
+}

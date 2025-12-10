@@ -1,0 +1,135 @@
+{
+  "as_of": "2025-12-08",
+  "tickers": [
+    {
+      "ticker": "AMZN",
+      "error": null,
+      "quote": {
+        "ticker": "AMZN",
+        "last_price": 226.89,
+        "change_abs": -2.64,
+        "change_pct": -1.15,
+        "currency": "USD",
+        "open_price": 229.52,
+        "previous_close": 229.53,
+        "day_low": 226.27,
+        "day_high": 230.82,
+        "volume": 34745139,
+        "avg_volume": 48715319,
+        "premarket_change_pct": null,
+        "after_hours_change_pct": null
+      },
+      "analysis": {
+        "ticker": "AMZN",
+        "title": "Why is AMZN moving today?",
+        "updated_at": "5m ago",
+        "summary": "Amazon (AMZN) fell 1.06% due to broader market weakness and a 1.6% decline in the consumer cyclical sector, which weighed on investor sentiment. Recent developments highlight Amazon's strategic moves in technology and e-commerce, including backing Blue Current's battery technology and launching new insurance offerings for FBA sellers, reflecting its commitment to innovation and risk management in supply chains. Financially, Amazon showed solid growth in FY 2025 Q3 with 11.48% revenue growth and a gross margin of 34.68%, though some operational efficiency challenges remain. Insider transactions indicate significant sales by executives, including a notable $3 million sale by David Zapolsky, suggesting a mix of routine and larger-than-usual activity.",
+        "bullets": [
+          "Amazon's stock fell 1.06% amid broader market weakness and a 1.6% drop in the consumer cyclical sector.",
+          "Amazon is backing Blue Current's battery technology and launched Lost Inbound Insurance for FBA sellers, showing innovation in supply chain risk management.",
+          "FY 2025 Q3 financials show 11.48% revenue growth and a 34.68% gross margin, indicating solid profitability despite some efficiency declines.",
+          "Amazon insiders executed 25 transactions totaling over $11 million, including 15 stock sales and 10 stock conversions, with notable large sales by executives.",
+          "AWS accelerated to 20.2% YoY growth in Q3 2025, with CapEx expected to reach $125B in 2025 driven by AI infrastructure demand."
+        ]
+      }
+    },
+    {
+      "ticker": "NVDA",
+      "error": null,
+      "quote": {
+        "ticker": "NVDA",
+        "last_price": 185.55,
+        "change_abs": 3.14,
+        "change_pct": 1.72,
+        "currency": "USD",
+        "open_price": 182.63,
+        "previous_close": 182.41,
+        "day_low": 182.4,
+        "day_high": 187.99,
+        "volume": 191371625,
+        "avg_volume": 190525273,
+        "premarket_change_pct": null,
+        "after_hours_change_pct": null
+      },
+      "analysis": {
+        "ticker": "NVDA",
+        "title": "AI Analysis",
+        "updated_at": "Updated 6m ago",
+        "summary": "NVIDIA's stock is rising about 2% following the approval of its H200 AI chip sales to China, combined with expectations of upcoming Federal Reserve interest rate cuts. Despite a recent slowdown in revenue growth from 71.55% to 65.22% between Q2 and Q3 2026, the company maintains strong profitability with gross margins around 70%. The stock's valuation has become more attractive as the P/E ratio declined from 48.89x to 45.63x. Competitors like AMD and Intel also saw stock increases, reflecting a positive sector response amid mixed broader market trends.",
+        "bullets": [
+          "Growth Metrics: Revenue growth slowed from 71.55% in Q2 2026 to 65.22% in Q3 2026, indicating normalization from previously higher rates.",
+          "Valuation Metrics: P/E ratio declined from 48.89x in Q2 2026 to 45.63x in Q3 2026, suggesting a more attractive valuation.",
+          "Competitor Movements: Stocks of competitors such as AMD and Intel increased following NVIDIA's news, indicating sector-wide positive response.",
+          "Broader Market Trends: Overall market shows declines, but NVIDIA's performance stands out amid chip sales news.",
+          "Profitability Metrics: Gross margin improved slightly to 70.05% in Q3 2026, reflecting effective cost management amidst competition.",
+          "Insider Transaction Activity: Insiders executed 16 stock sales totaling $12,265,985.91, with notable transactions by Colette Kress and Brooke Seawell.",
+          "Market Reactions to Chip Sales: NVIDIA's stock rose by 2.5% after the announcement of chip sales to China, reflecting strong investor confidence."
+        ]
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "error": null,
+      "quote": {
+        "ticker": "MSFT",
+        "last_price": 491.02,
+        "change_abs": 7.86,
+        "change_pct": 1.63,
+        "currency": "USD",
+        "open_price": 484.89,
+        "previous_close": 483.16,
+        "day_low": 484.38,
+        "day_high": 492.3,
+        "volume": 20801963,
+        "avg_volume": 22162733,
+        "premarket_change_pct": null,
+        "after_hours_change_pct": null
+      },
+      "analysis": {
+        "ticker": "MSFT",
+        "title": "AI Analysis",
+        "updated_at": "Updated 6m ago",
+        "summary": "Microsoft (MSFT) is experiencing strong demand for its AI services, with a notable 26% increase in cloud revenue and ongoing negotiations for custom chips with Broadcom. Analysts maintain a bullish outlook, supported by solid earnings growth and a significant rise in recurring revenue.",
+        "bullets": [
+          "Microsoft's AI platform is driving substantial revenue growth, particularly with a 26% increase in fiscal Q1 2026 cloud revenue.",
+          "Analysts maintain a bullish outlook with price targets ranging from $600.00 to $650.00, significantly above the current price of $483.16.",
+          "Microsoft's P/E ratio increased to 36.70x in Q1 2026, reflecting growing investor confidence. The Price-to-Sales ratio remained stable at 13.10x.",
+          "Gross margin is at 68.76%, and operating margin improved to 46.27%, indicating strong operational efficiency.",
+          "Negotiations with Broadcom for custom chips may impact Microsoft's relationship with Marvell Technology, raising concerns about potential contract losses.",
+          "Recent insider transactions included 11 stock awards (valued at $0) and 1 stock sale totaling $1,364,352 by Takeshi Numoto, EVP, Chief Marketing Officer."
+        ]
+      }
+    },
+    {
+      "ticker": "GOOGL",
+      "error": null,
+      "quote": {
+        "ticker": "GOOGL",
+        "last_price": 313.72,
+        "change_abs": -7.34,
+        "change_pct": -2.29,
+        "currency": "USD",
+        "open_price": 320.07,
+        "previous_close": 321.06,
+        "day_low": 311.22,
+        "day_high": 320.44,
+        "volume": 33362561,
+        "avg_volume": 36692909,
+        "premarket_change_pct": null,
+        "after_hours_change_pct": null
+      },
+      "analysis": {
+        "ticker": "GOOGL",
+        "title": "Why is GOOGL moving today?",
+        "updated_at": "5m ago",
+        "summary": "Alphabet (GOOGL) experienced a 2.07% decline as investors took profits following a strong run, despite some analysts raising price targets. The stock's drop contrasts with a slight dip in the broader market. The company remains a leader in AI initiatives and partnerships, with analysts maintaining optimism about its growth prospects driven by AI strategies.",
+        "bullets": [
+          "AI Expansion: Google is leveraging partnerships with companies like NextEra and Replit to enhance its position in the AI market.",
+          "Future Outlook: Analysts have a consensus 'Strong Buy' rating, driven by Google's AI initiatives and strategic collaborations.",
+          "Market Volatility: The stock's recent 2.6% drop reflects investor profit-taking after a substantial price increase, despite positive developments.",
+          "Insider Transactions: Sundar Pichai sold 37,700 shares totaling $10,383,860.59 across 8 transactions on December 3, 2025, with the largest sale exceeding $3.3 million, indicating concentrated selling activity."
+        ]
+      }
+    }
+  ]
+}

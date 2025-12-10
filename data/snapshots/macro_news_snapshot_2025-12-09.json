@@ -1,0 +1,72 @@
+{
+  "as_of": "2025-12-09",
+  "macro_news": {
+    "report_count": 10,
+    "date_range": "2025-12-07 12:00 ET to 2025-12-09 14:45 ET",
+    "summary": "US equity markets are modestly lower amid cautious sentiment ahead of the Federal Reserve's key policy decision expected on December 10, with Treasury yields rising 3-5 basis points across the curve. Market participants are digesting mixed earnings reports, notable M&A activity, and geopolitical developments, while the global backdrop features a subtle shift towards more hawkish monetary policy and strong Chinese export data.",
+    "bullets": [
+      "[MACRO] US equity indices are down modestly with the S&P 500 down 0.33%, equal-weight S&P down 0.34%, Dow down 0.34%, Nasdaq down 0.21%, while the Russell 2000 advances 0.13%, reflecting cautious investor positioning ahead of the Fed meeting on December 10.",
+      "[CENTRAL BANK] Treasury yields rose 3-5 basis points across the curve ahead of the Fed decision expected to signal a pause after an anticipated rate cut, with forward guidance likely shifting hawkish; the market also anticipates key catalysts next week including US retail sales, jobs, CPI, and the Bank of Japan decision.",
+      "[DATA] China\u2019s November exports beat expectations at +5.9% year-over-year versus the Street\u2019s +4%, while imports rose 1.9% versus +3% estimates, pushing China\u2019s aggregate trade surplus above $1 trillion for the first time this year, signaling ongoing global trade imbalances.",
+      "[GEOPOLITICS] Thailand launched air strikes against Cambodia as a fragile peace deal broke down, and the US White House\u2019s new national security strategy softened language on Taiwan, likely pleasing Beijing; Russian forces have gained the upper hand in Ukraine, contributing to Putin\u2019s hardline stance in peace talks.",
+      "[SECTOR] Technology stocks including AKAM, ANET, AVGO, CSCO, DELL, GLW, HPE, IBM, JBL, LRCX, MPWR, MU, NVDA, ON, ORCL, SMCI, and TSM are outperforming, supported by AI sector developments and major upcoming earnings from Oracle and Broadcom; media stocks WBD and PSKY are rallying amid a hostile bid for Warner Bros. Discovery.",
+      "[STOCK] IBM announced acquisition of Confluent (CFLT) for $11 billion to bolster its AI software business, expected to be accretive to EBITDA in year one; Paramount (PSKY) launched a hostile $30 per share cash bid for Warner Bros. Discovery (WBD), with potential for a higher offer and easier regulatory approval than Netflix\u2019s previous bid.",
+      "[STOCK] Marvell (MRVL) shares declined on reports Microsoft may shift AI chip business to Broadcom (AVGO), and Benchmark downgraded Marvell after losing Trainium 3 and 4 business to Alchip, pressuring MRVL relative to Broadcom.",
+      "[STOCK] Berkshire Hathaway (BRK\u2019b) shares are under pressure following management changes with the departure of Combs, raising questions about capital allocation in the post-Buffett era.",
+      "[SECTOR] Housing-related stocks including Home Depot and Toll Brothers issued muted 2026 financial forecasts, signaling subdued momentum in the housing sector and contributing to underperformance in housing and retail/consumer sectors.",
+      "[FLOW/SENTIMENT] The US dollar index (DXY) is rallying 0.19%, Brent crude oil is down 1.45%, gold is up 0.45%, and bitcoin is down 0.25%, reflecting mixed commodity and currency moves amid cautious risk sentiment."
+    ],
+    "sources": [
+      {
+        "title": "JPMorgan: takeaways from the Goldman conf. presentation",
+        "date_str": "Dec 9, 2025 10:47 AM",
+        "category": "INTRADAY"
+      },
+      {
+        "title": "Vital Mid-Day Market Update for Tuesday December 9, 2025",
+        "date_str": "Dec 9, 2025 08:21 AM",
+        "category": "INTRADAY"
+      },
+      {
+        "title": "Company-specific news for Tues 12/9 (BMO) - AZO, CAL, CNM, CPB, CVS, FERG, GIII, HD, NVDA, OLLI, SAIL, XOM",
+        "date_str": "Dec 9, 2025 04:25 AM",
+        "category": "EARNINGS"
+      },
+      {
+        "title": "CVS provides guidance for '25 (small positive), '26 (small negative), and '28 (positive)",
+        "date_str": "Dec 9, 2025 03:43 AM",
+        "category": "EARNINGS"
+      },
+      {
+        "title": "Home Depot follows Toll Bros. with a muted 2026 financial forecast",
+        "date_str": "Dec 9, 2025 03:06 AM",
+        "category": "EARNINGS"
+      },
+      {
+        "title": "Nvidia: China to impose restrictions on H200 purchases (according to the FT)",
+        "date_str": "Dec 9, 2025 02:44 AM",
+        "category": "INTRADAY"
+      },
+      {
+        "title": "Vital Dawn for Tuesday December 9, 2025",
+        "date_str": "Dec 9, 2025 02:17 AM",
+        "category": "MORNING"
+      },
+      {
+        "title": "Company-specific news from Mon 12/8 (AMC) - GPK, KMI, NVDA, PEP, TOL",
+        "date_str": "Dec 8, 2025 02:07 PM",
+        "category": "INTRADAY"
+      },
+      {
+        "title": "Vital Market Recap for Monday December 8, 2025",
+        "date_str": "Dec 8, 2025 01:02 PM",
+        "category": "MARKET CLOSE"
+      },
+      {
+        "title": "Vital Mid-Day Market Update for Monday December 8, 2025",
+        "date_str": "Dec 8, 2025 08:15 AM",
+        "category": "INTRADAY"
+      }
+    ]
+  }
+}

@@ -1,30 +1,13 @@
 """
 Yahoo Finance quote extraction using observe() -> cache -> extract() pattern.
 """
-import asyncio
 from typing import Optional
 
 from src.core.cache import selector_cache
+from src.core.retry_helpers import navigate_with_retry
 from .schemas import YahooQuotePrices, YahooQuoteVolume, YahooQuoteSnapshot
 
 CACHE_KEY = "yahoo_quote_main_container"
-
-
-async def _navigate_with_retry(page, url: str, max_retries: int = 2):
-    """
-    Navigate to URL with retry logic for transient Browserbase errors.
-    """
-    for attempt in range(max_retries + 1):
-        try:
-            await page.goto(url, timeout=30000)
-            return
-        except Exception as e:
-            if attempt < max_retries:
-                wait_time = 2 ** attempt  # 1s, 2s
-                print(f"  Navigation failed, retrying in {wait_time}s... ({e})")
-                await asyncio.sleep(wait_time)
-            else:
-                raise
 
 
 async def _get_or_discover_selector(page, cache_key: str) -> Optional[str]:
@@ -78,7 +61,7 @@ async def fetch_yahoo_quote_prices(page, ticker: str) -> YahooQuotePrices:
     Uses cached selector when available.
     """
     url = f"https://finance.yahoo.com/quote/{ticker}"
-    await _navigate_with_retry(page, url)
+    await navigate_with_retry(page, url, max_retries=2, timeout=30000)
 
     selector = await _get_or_discover_selector(page, CACHE_KEY)
 
@@ -111,7 +94,7 @@ async def fetch_yahoo_quote(page, ticker: str) -> YahooQuoteSnapshot:
     Extracts full quote snapshot using the new pattern.
     """
     url = f"https://finance.yahoo.com/quote/{ticker}"
-    await _navigate_with_retry(page, url)
+    await navigate_with_retry(page, url, max_retries=2, timeout=30000)
 
     selector = await _get_or_discover_selector(page, CACHE_KEY)
 

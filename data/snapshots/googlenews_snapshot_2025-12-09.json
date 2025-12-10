@@ -1,0 +1,237 @@
+{
+  "as_of": "2025-12-09",
+  "tickers": [
+    {
+      "ticker": "AMZN",
+      "error": null,
+      "googlenews": {
+        "ticker": "AMZN",
+        "stories": [
+          {
+            "headline": "Can Amazon Stock Hit $400 in 2026?",
+            "url": "https://www.barchart.com/story/news/36536100/can-amazon-stock-hit-400-in-2026",
+            "source": "Barchart.com",
+            "age": "9 minutes ago",
+            "summary": "Amazon's stock is experiencing strong momentum driven by robust growth in cloud computing (AWS), advertising, and AI initiatives. The company reported a 12% revenue increase to $180.2 billion and a 36.4% rise in net income per share, with AWS expanding rapidly and investing heavily in AI infrastructure. Analysts rate AMZN as a strong buy, with potential upside to $400 by 2026, reflecting a positive outlook based on its expanding profitability and AI-driven growth.",
+            "sentiment": "positive"
+          },
+          {
+            "headline": "Amazon stock jumps on $38 billion deal with OpenAI to use hundreds of thousands of Nvidia chips",
+            "url": "https://www.aol.com/finance/amazon-stock-jumps-38-billion-145357596.html",
+            "source": "AOL.com",
+            "age": "4 hours ago",
+            "summary": "Amazon announced a $38 billion multi-year deal with OpenAI allowing the ChatGPT developer to access hundreds of thousands of Nvidia's AI chips through Amazon Web Services' cloud computing infrastructure. This partnership caused Amazon's stock to jump 4% as it positions AWS as a key AI infrastructure provider. The news is positive for Amazon's stock, reflecting strong demand and growth potential in AI cloud services.",
+            "sentiment": "positive"
+          },
+          {
+            "headline": "3 Stocks That Could Skyrocket Before the End of 2025",
+            "url": "https://www.fool.com/investing/2025/12/09/3-stocks-that-could-skyrocket-before-the-end-2025/",
+            "source": "The Motley Fool",
+            "age": "4 hours ago",
+            "summary": "Amazon is planning to spend $125 billion on artificial intelligence by the end of 2025 and accelerate spending next year, with AWS sales growing over 20% year over year in Q3. Despite this, Amazon's stock has only risen 5% in 2025, lagging the market's 18% gain, possibly due to concerns about losing its edge in AI. The company's continued AI investments and a $200 billion project backlog suggest potential for stock growth, making the news positive for Amazon's stock.",
+            "sentiment": "positive"
+          },
+          {
+            "headline": "Amazon Stock (AMZN) Unmoved By King of Meat Game Studio Layoffs",
+            "url": "https://www.tipranks.com/news/amazon-stock-amzn-unmoved-by-king-of-meat-game-studio-layoffs",
+            "source": "TipRanks",
+            "age": "4 hours ago",
+            "summary": "The main news is that layoffs at King of Meat Game Studio have occurred, but this event has not caused any movement in Amazon's (AMZN) stock price. The lack of impact on AMZN stock suggests that the layoffs are viewed as neutral with respect to Amazon's business and stock performance.",
+            "sentiment": "neutral"
+          },
+          {
+            "headline": "Earnings live: Toll Brothers stock falls on margin softness; investors look to Oracle, Broadcom results ahead",
+            "url": "https://finance.yahoo.com/news/live/earnings-live-autozone-toll-brothers-stocks-fall-campbells-sales-decline-133646635.html",
+            "source": "Yahoo Finance",
+            "age": "6 hours ago",
+            "summary": "Amazon (AMZN) stock is mentioned in the context of increased competition in the grocery sector, with analysts noting pressure on Kroger shares due to Amazon's push into grocery, Walmart's price competition, and concerns about food inflation. This competitive environment is weighing on Kroger's stock and is a factor investors consider regarding Amazon's impact on the grocery market. The news is neutral to slightly negative for Amazon's stock as it highlights competitive pressures rather than direct positive earnings news.",
+            "sentiment": "neutral"
+          }
+        ],
+        "news_summary": {
+          "overall_sentiment": "bullish",
+          "bullet_points": [
+            "Amazon's stock shows strong momentum with 12% revenue growth to $180.2 billion and a 36.4% rise in net income per share, driven by AWS expansion and AI investments, with analysts rating AMZN as a strong buy and potential to reach $400 by 2026.",
+            "Amazon announced a $38 billion multi-year deal with OpenAI to provide access to hundreds of thousands of Nvidia AI chips via AWS, boosting Amazon's stock by 4% and positioning AWS as a key AI infrastructure provider.",
+            "Amazon plans to spend $125 billion on AI by the end of 2025, with AWS sales growing over 20% year over year in Q3, and a $200 billion project backlog indicating strong growth potential despite the stock's modest 5% rise in 2025.",
+            "Competitive pressures in the grocery sector from Amazon's push, Walmart's pricing, and food inflation concerns are impacting competitors like Kroger, representing a neutral to slightly negative factor for Amazon's stock."
+          ]
+        }
+      }
+    },
+    {
+      "ticker": "NVDA",
+      "error": null,
+      "googlenews": {
+        "ticker": "NVDA",
+        "stories": [
+          {
+            "headline": "Palantir vs. Nvidia: Which Stock Will Outperform in 2026?",
+            "url": "https://finance.yahoo.com/news/palantir-vs-nvidia-stock-outperform-193500495.html",
+            "source": "Yahoo Finance",
+            "age": "11 minutes ago",
+            "summary": "The article compares Palantir and Nvidia as leading AI stocks, highlighting Palantir's accelerating growth driven by its AI platform adoption and Nvidia's dominant position in AI infrastructure with significant revenue growth. Nvidia's stock movement is influenced by its nearly tenfold revenue increase over three years and a 62% revenue growth in Q3, indicating a strong growth runway. This news is positive for Nvidia's stock as it underscores its leadership and growth potential in the AI sector.",
+            "sentiment": "positive"
+          },
+          {
+            "headline": "Stock market today: Dow, S&P 500, Nasdaq rise as Fed meeting kicks off, JOLTS data shows openings rose",
+            "url": "https://finance.yahoo.com/news/live/stock-market-today-dow-sp-500-nasdaq-rise-as-fed-meeting-kicks-off-jolts-data-shows-openings-rose-143633201.html",
+            "source": "Yahoo Finance",
+            "age": "16 minutes ago",
+            "summary": null,
+            "sentiment": null
+          },
+          {
+            "headline": "S&P 500 is little changed as traders brace for Fed decision, Dow dragged down by JPMorgan: Live updates",
+            "url": "https://www.cnbc.com/2025/12/08/stock-market-today-live-updates.html",
+            "source": "CNBC",
+            "age": "27 minutes ago",
+            "summary": "President Donald Trump announced that the U.S. will allow Nvidia to ship its advanced H200 AI chips to approved customers in China under conditions including a 25% cut of sales to the U.S. government. This move lifts a previous ban and could positively impact Nvidia's stock by opening a significant market, although Nvidia is cautious about including large China sales in its forecasts due to potential restrictions by Beijing. Overall, this development is positive for Nvidia's stock as it expands market access for its AI chips.",
+            "sentiment": "positive"
+          },
+          {
+            "headline": "Stock Market Today: Dow Falls As JPMorgan Veers Lower; This Auto Parts Name Skids (Live Coverage)",
+            "url": "https://www.investors.com/market-trend/stock-market-today/dow-jones-sp500-nasdaq-fed-meeting-nvidia-nvda-trump/",
+            "source": "Investor's Business Daily",
+            "age": "57 minutes ago",
+            "summary": "The article could not be accessed due to a human verification block, so no information about NVDA stock is available from this source.",
+            "sentiment": null
+          },
+          {
+            "headline": "Semiconductor Stocks Today (Dec. 9, 2025): Nvidia and Micron in Focus as Fed Decision and China Chip Deal Loom",
+            "url": "https://ts2.tech/en/semiconductor-stocks-today-dec-9-2025-nvidia-and-micron-in-focus-as-fed-decision-and-china-chip-deal-loom/",
+            "source": "ts2.tech",
+            "age": "2 hours ago",
+            "summary": "The main news is that Nvidia has been allowed by the U.S. government to resume selling its H200 AI processors to China under new conditions involving a 25% export fee to the U.S. This development caused Nvidia's stock to initially jump but then decline due to concerns that China may restrict access to these chips to boost its own AI hardware development. The stock movement reflects a mixed sentiment, balancing the positive near-term revenue impact against geopolitical risks and valuation concerns, resulting in a neutral overall outlook for Nvidia's stock.",
+            "sentiment": "neutral"
+          }
+        ],
+        "news_summary": {
+          "overall_sentiment": "mixed",
+          "bullet_points": [
+            "Nvidia has been allowed by the U.S. government to resume selling its H200 AI processors to China under new conditions involving a 25% export fee to the U.S. government, initially causing the stock to jump but then decline due to concerns over potential Chinese restrictions.",
+            "President Donald Trump announced the U.S. will allow Nvidia to ship advanced H200 AI chips to approved customers in China, lifting a previous ban and expanding market access, though Nvidia remains cautious about including large China sales in forecasts.",
+            "Analyst opinions on Nvidia are polarized, with some forecasting a rise to $275 due to strong AI data-center demand, while others warn of valuation risks with average 12-month price targets closer to $133.",
+            "Micron Technology leads large-cap semiconductor gains with a 2.5% rise, supported by bullish analyst calls and a 'Buy' rating from HSBC, highlighting confidence in AI-driven growth potential."
+          ]
+        }
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "error": null,
+      "googlenews": {
+        "ticker": "MSFT",
+        "stories": [
+          {
+            "headline": "Microsoft Outlook Brighter With Azure, OpenAI Deal In Focus. Is The Software Giant A Buy Now?",
+            "url": "https://www.investors.com/research/microsoft-msft-ai-stock-azure/?src=A00444A&refcode=aflGoogleNews",
+            "source": "Investor's Business Daily",
+            "age": "14 minutes ago",
+            "summary": "The article content is inaccessible due to a human verification block, preventing extraction of information about MSFT stock. Therefore, no summary can be provided based on this article.",
+            "sentiment": null
+          },
+          {
+            "headline": "Copilot Crashlands: Microsoft Stock (NASDAQ:MSFT) Dips as Copilot Suffers Outage",
+            "url": "https://www.tipranks.com/news/copilot-crashlands-microsoft-stock-nasdaqmsft-dips-as-copilot-suffers-outage",
+            "source": "TipRanks",
+            "age": "1 hour ago",
+            "summary": "Microsoft's AI-driven Copilot system experienced an outage primarily affecting users in Europe, including the UK and continental Europe, impacting various Copilot services such as the Edge browser and Microsoft 365. This outage caused a slight dip in Microsoft (MSFT) stock as investors reacted to the disruption, although the issue was identified as a capacity scaling problem rather than a malicious attack and is being addressed. Overall, the event is viewed as a minor negative impact on the stock due to the temporary service disruption.",
+            "sentiment": "negative"
+          },
+          {
+            "headline": "Microsoft (NASDAQ: MSFT) investors reject Israel-focused Proposal 9 with more than 70% no",
+            "url": "https://www.stocktitan.net/news/MSFT/j-lens-and-adl-applaud-microsoft-shareholders-vote-to-reject-bds-v0oomqg8w2bt.html",
+            "source": "Stock Titan",
+            "age": "2 hours ago",
+            "summary": "Microsoft shareholders decisively rejected Proposal 9, a resolution aligned with the Boycott, Divestment and Sanctions (BDS) movement targeting Israel, with over 70% voting against it at the 2025 Annual Shareholder Meeting. This rejection reflects shareholder opposition to a politically motivated campaign disguised as human rights due diligence, which was seen as a risk to shareholder value. The outcome is positive for Microsoft stock as it avoids the potential negative impact of disengagement from business ties with Israel.",
+            "sentiment": "positive"
+          },
+          {
+            "headline": "Microsoft (MSFT) draws fresh optimism from analysts after strategic update",
+            "url": "https://www.msn.com/en-us/money/topstocks/microsoft-msft-draws-fresh-optimism-from-analysts-after-strategic-update/ar-AA1S1pZK?ocid=finance-verthp-feeds",
+            "source": "MSN",
+            "age": "3 hours ago",
+            "summary": "Microsoft announced a second price increase for its Office and Microsoft 365 subscriptions effective July 1, 2026, citing the addition of 1,100 new features across its products. Barclays reiterated an \"Overweight\" rating with a $625 price target, viewing the price hikes as reinforcing Microsoft's AI-driven pricing leverage supported by steady enterprise demand. This strategic update has generated fresh optimism among analysts, positively influencing MSFT stock sentiment.",
+            "sentiment": "positive"
+          },
+          {
+            "headline": "D.A. Davidson Remains a Buy on Microsoft Corporation (MSFT)",
+            "url": "https://finviz.com/news/249695/da-davidson-remains-a-buy-on-microsoft-corporation-msft",
+            "source": "Finviz",
+            "age": "3 hours ago",
+            "summary": null,
+            "sentiment": null
+          }
+        ],
+        "news_summary": {
+          "overall_sentiment": "mixed",
+          "bullet_points": [
+            "Microsoft's AI-driven Copilot system experienced an outage affecting users in Europe, causing a slight dip in MSFT stock; the issue was a capacity scaling problem and is being addressed.",
+            "Microsoft shareholders rejected Proposal 9, aligned with the BDS movement targeting Israel, with over 70% voting against it, avoiding potential negative impacts on shareholder value.",
+            "Microsoft announced a second price increase for Office and Microsoft 365 subscriptions effective July 1, 2026, citing 1,100 new features, which has generated fresh optimism among analysts.",
+            "D.A. Davidson reiterated a Buy rating on MSFT with a $650 price target, highlighting OpenAI's significant contribution and Microsoft's priority on AI spending to maintain its hyperscaler status."
+          ]
+        }
+      }
+    },
+    {
+      "ticker": "GOOGL",
+      "error": null,
+      "googlenews": {
+        "ticker": "GOOGL",
+        "stories": [
+          {
+            "headline": "Tech Voices: Nvidia China chip sales, Gates on AI bubble, Google AI",
+            "url": "https://seekingalpha.com/news/4529831-tech-voices-nvidia-china-chip-sales-gates-on-ai-bubble-google-ai",
+            "source": "Seeking Alpha",
+            "age": "16 minutes ago",
+            "summary": "The main news is that the U.S. government will allow Nvidia to sell its H200 AI chips to approved customers in China under certain conditions, with 25% of proceeds going to the U.S. government. This development is causing movement in GOOGL stock as it reflects broader AI sector dynamics and competitive positioning, including Alphabet's Gemini AI deployment for government use. The news is generally positive for GOOGL as it could strengthen its public sector foothold and drive higher adoption of its AI technologies.",
+            "sentiment": "positive"
+          },
+          {
+            "headline": "Alphabet Stock (GOOGL) Rises on AI Deal for U.S. Dept. of War\u2019s Workforce",
+            "url": "https://www.tipranks.com/news/alphabet-stock-googl-rises-on-ai-deal-for-u-s-dept-of-wars-workforce",
+            "source": "TipRanks",
+            "age": "59 minutes ago",
+            "summary": "Alphabet's stock rose after Google Cloud's Gemini for Government was selected to provide AI-enhanced productivity tools to the U.S. Department of War's workforce, covering about 3 million civilian and military employees. This deal aims to modernize the department's legacy systems and improve real-time decision-making by automating administrative tasks and enhancing operational planning. The news is positive for GOOGL stock as it reflects strong government adoption of Google's AI services and cloud capabilities.",
+            "sentiment": "positive"
+          },
+          {
+            "headline": "GOOGL Rises 79% in a Year on AI Push: Will the Rally Continue in 2026?",
+            "url": "https://www.tradingview.com/news/zacks:4b0e10a52094b:0-googl-rises-79-in-a-year-on-ai-push-will-the-rally-continue-in-2026/",
+            "source": "TradingView",
+            "age": "3 hours ago",
+            "summary": "Alphabet's GOOGL shares have surged 78.9% over the past year, driven by its aggressive AI integration across search and cloud platforms, outperforming peers like Microsoft, Apple, and Amazon. The company's expanding AI-powered search capabilities and significant investments in cloud computing are boosting growth prospects, although capacity constraints and higher costs may pressure profitability in 2026. Overall, the news is positive for GOOGL stock due to strong AI-driven growth, but some near-term challenges suggest cautious optimism.",
+            "sentiment": "positive"
+          },
+          {
+            "headline": "Google (GOOGL) Stock: Faces Fresh EU Scrutiny as Regulators Question AI Use",
+            "url": "https://coincentral.com/eu-antitrust-probe-google-ai-publisher-rights/",
+            "source": "CoinCentral",
+            "age": "4 hours ago",
+            "summary": "The European Union has launched a major antitrust investigation into Google's AI tools, specifically examining whether Google's AI Overviews use publisher content without fair licensing or payment. This probe has caused Alphabet Inc. (GOOG) shares to dip slightly due to investor concerns over potential regulatory consequences. Given the history of lengthy EU investigations and significant fines against Google, this development is viewed as a negative catalyst for the stock.",
+            "sentiment": "negative"
+          },
+          {
+            "headline": "Google Cloud's Gemini for government to power GenAI.mil, tech giant says (GOOG:NASDAQ)",
+            "url": "https://seekingalpha.com/news/4529729-google-clouds-gemini-for-government-to-power-genai-mil-tech-giant-says",
+            "source": "Seeking Alpha",
+            "age": "5 hours ago",
+            "summary": "Google Cloud announced that its Gemini for Government AI service will be the first enterprise AI deployed on the U.S. Department of War's GenAI.mil platform, serving 3 million civilian and military personnel. This deployment is driving movement in GOOGL stock as it represents a significant government contract and expansion of Google's AI capabilities in defense. The news is positive for the stock as it highlights growth opportunities and government trust in Google's AI technology.",
+            "sentiment": "positive"
+          }
+        ],
+        "news_summary": {
+          "overall_sentiment": "bullish",
+          "bullet_points": [
+            "The U.S. government will allow Nvidia to sell its H200 AI chips to approved customers in China with 25% of proceeds going to the U.S. government, reflecting positive AI sector dynamics impacting GOOGL.",
+            "Alphabet's Google Cloud Gemini for Government was selected to provide AI productivity tools to the U.S. Department of War's 3 million civilian and military employees, signaling strong government adoption of Google's AI services.",
+            "GOOGL shares have surged nearly 79% over the past year due to aggressive AI integration across search and cloud platforms, outperforming major peers and boosting growth prospects.",
+            "Google Cloud's Gemini for Government AI service will be the first enterprise AI deployed on the U.S. Department of War's GenAI.mil platform, highlighting significant government contracts and expansion of Google's AI capabilities in defense."
+          ]
+        }
+      }
+    }
+  ]
+}

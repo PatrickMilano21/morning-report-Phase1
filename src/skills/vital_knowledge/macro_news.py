@@ -14,6 +14,9 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 from zoneinfo import ZoneInfo
 
+from src.core.retry_helpers import navigate_with_retry, extract_with_retry
+from src.core.observability.errors import get_error_tracker
+
 
 # =============================================================================
 # DATA MODELS (Pydantic)
@@ -233,7 +236,7 @@ async def fetch_macro_news(page, days_back: int = 2) -> MacroNewsSummary:
         raise ValueError("Missing Vital_login or Vital_password in .env")
 
     print("[MacroNews] Navigating to login page...")
-    await page.goto("https://vitalknowledge.net/login", wait_until="networkidle", timeout=30000)
+    await navigate_with_retry(page, "https://vitalknowledge.net/login", max_retries=2, timeout=30000, wait_until="networkidle")
 
     print("[MacroNews] Entering credentials...")
     await page.act(f"Enter '{username}' into the username or email input field")
@@ -337,9 +340,11 @@ async def fetch_macro_news(page, days_back: int = 2) -> MacroNewsSummary:
                 await page.wait_for_load_state("networkidle", timeout=15000)
                 
                 # Extract macro news using the professional instruction template
-                extract_result = await page.extract(
+                extract_result = await extract_with_retry(
+                    page,
                     instruction=MACRO_EXTRACTION_INSTRUCTION,
                     schema=MacroExtract,
+                    max_retries=1,
                 )
                 
                 if extract_result:
@@ -366,13 +371,20 @@ async def fetch_macro_news(page, days_back: int = 2) -> MacroNewsSummary:
                 # Navigate back to Everything page for next report
                 if i < len(valid_reports) - 1:  # Don't navigate back after last report
                     print("[MacroNews] Navigating back to Everything page...")
-                    await page.goto("https://vitalknowledge.net/", wait_until="networkidle", timeout=15000)
+                    await navigate_with_retry(page, "https://vitalknowledge.net/", max_retries=2, timeout=15000, wait_until="networkidle")
                     await page.act("Click on the 'Everything' link or button in the navigation")
                     await page.wait_for_load_state("networkidle", timeout=15000)
                     await asyncio.sleep(2)
                 
             except Exception as e:
                 print(f"  [ERROR] Error processing report: {e}")
+                error_tracker = get_error_tracker()
+                error_tracker.record_error(
+                    error=e,
+                    component="MacroNews (src.skills.vital_knowledge.macro_news)",
+                    context={"report_title": report.title, "report_index": i},
+                    failure_point="report_processing",
+                )
                 # Continue with next report
                 continue
         
@@ -421,6 +433,13 @@ async def fetch_macro_news(page, days_back: int = 2) -> MacroNewsSummary:
                         final_bullets = combined_result.bullets[:10]
             except Exception as e:
                 print(f"[MacroNews] Could not generate combined summary: {e}")
+                error_tracker = get_error_tracker()
+                error_tracker.record_error(
+                    error=e,
+                    component="MacroNews (src.skills.vital_knowledge.macro_news)",
+                    context={"phase": "combined_summary_generation"},
+                    failure_point="summary_extraction",
+                )
                 # Use first summary as fallback
                 combined_summary = all_summaries[0] if all_summaries else None
 
@@ -441,6 +460,13 @@ async def fetch_macro_news(page, days_back: int = 2) -> MacroNewsSummary:
         print(f"[MacroNews] Failed: {e}")
         import traceback
         traceback.print_exc()
+        error_tracker = get_error_tracker()
+        error_tracker.record_error(
+            error=e,
+            component="MacroNews (src.skills.vital_knowledge.macro_news)",
+            context={"function": "fetch_macro_news"},
+            failure_point="macro_news_fetch_failed",
+        )
         return MacroNewsSummary()
 
 

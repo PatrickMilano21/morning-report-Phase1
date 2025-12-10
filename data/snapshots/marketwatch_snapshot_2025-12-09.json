@@ -1,0 +1,25 @@
+{
+  "as_of": "2025-12-09",
+  "tickers": [
+    {
+      "ticker": "AMZN",
+      "error": null,
+      "marketwatch": null
+    },
+    {
+      "ticker": "NVDA",
+      "error": null,
+      "marketwatch": null
+    },
+    {
+      "ticker": "MSFT",
+      "error": null,
+      "marketwatch": null
+    },
+    {
+      "ticker": "GOOGL",
+      "error": null,
+      "marketwatch": null
+    }
+  ]
+}

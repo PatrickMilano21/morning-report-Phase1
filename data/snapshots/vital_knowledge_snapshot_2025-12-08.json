@@ -1,0 +1,171 @@
+{
+  "as_of": "2025-12-08",
+  "tickers": [
+    {
+      "ticker": "AMZN",
+      "error": null,
+      "vital_knowledge": {
+        "ticker": "AMZN",
+        "headlines": [
+          {
+            "headline": "Amazon shares experienced pressure on Monday amid a fractured AI narrative, diverging from Nvidia's strong performance, indicating a potential headwind for AMZN stock in the near term.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "AMZN was listed among tech stocks that underperformed on Monday, highlighting investor concerns or profit-taking in the sector that could impact its stock price.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "The report notes that the days of tech/AI stocks trading in unison are over, which could negatively affect AMZN's stock momentum as part of the tech group.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "No specific earnings, analyst ratings, or product announcements related to AMZN were mentioned in the report, suggesting no new fundamental catalysts were reported for the stock on this day.",
+            "context": null,
+            "sentiment": null
+          }
+        ],
+        "report_dates": [
+          "2025-12-08"
+        ],
+        "summary": {
+          "overall_sentiment": null,
+          "key_themes": [],
+          "summary": "Amazon shares faced pressure amid a fractured AI narrative diverging from Nvidia's strong performance, leading to underperformance among tech stocks including AMZN. No new earnings, analyst ratings, or product announcements were reported, indicating no fresh fundamental catalysts for the stock."
+        }
+      }
+    },
+    {
+      "ticker": "NVDA",
+      "error": null,
+      "vital_knowledge": {
+        "ticker": "NVDA",
+        "headlines": [
+          {
+            "headline": "Trump confirmed on social media that he will allow Nvidia to sell its H200 chip to \"approved customers in China and other countries,\" with the US Treasury set to take a 25% cut on this revenue; this approval is positive for Nvidia's international sales potential. However, the H200 chip is far inferior to Nvidia's Blackwell and Rubin chips, which may limit Chinese buyers' interest, and Nvidia's revenue from China remains nearly zero despite this approval. The approval extends similar privileges to AMD, Intel, and other American companies, indicating a broader policy impact but also increased competition. This development is not seen as a major overhang on AI stocks compared to other factors like the rise of Gemini/TPU and concerns about cash-burning startups' financial sustainability.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "The Commerce Department will approve the sale of Nvidia's H200 chip to China, which is a positive development for the company as it maintains steady trade relations with China and supports Nvidia's business growth in that market.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "Nvidia traded well on Monday in response to the Semafor report about the H200 chip approval, indicating investor confidence in the company's prospects despite pressure on other tech and AI stocks.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "Nvidia was among the large chunks of tech stocks that outperformed on Monday, reflecting strong market performance relative to peers and potential momentum in its sector.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "Skild AI's potential $14B valuation fundraising round might see participation from Nvidia, suggesting Nvidia's strategic interest and investment in AI-related ventures beyond its core chip business.",
+            "context": null,
+            "sentiment": null
+          }
+        ],
+        "report_dates": [
+          "2025-12-08",
+          "2025-12-07"
+        ],
+        "summary": {
+          "overall_sentiment": null,
+          "key_themes": [],
+          "summary": "The US has approved Nvidia's sale of its H200 chip to approved customers in China, which is positive for Nvidia's international sales despite the chip being less advanced than newer models. Nvidia's stock performed well following this news, reflecting investor confidence, and the company may participate in a significant AI startup fundraising, indicating strategic expansion beyond chip manufacturing."
+        }
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "error": null,
+      "vital_knowledge": {
+        "ticker": "MSFT",
+        "headlines": [
+          {
+            "headline": "Microsoft could shift its AI chip business from Marvell to Broadcom, potentially impacting Marvell's Trainium 3 and 4 business; this indicates a strategic change in Microsoft's AI hardware partnerships that could affect its AI capabilities and costs.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "Microsoft is included among large tech companies showing outperformance, suggesting positive market sentiment or performance relative to peers, which could influence investor confidence and stock price.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "The AI trade is becoming fractured with Microsoft-related stocks not moving in unison with other tech/AI companies, indicating potential volatility and sector-specific risks for Microsoft.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "OpenAI, closely linked to Microsoft through investment and collaboration, plans to release an updated ChatGPT model around December 9 to counter Google's Gemini 3 momentum; this development could impact Microsoft's AI product competitiveness and market position.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "Reports indicate that Microsoft might co-develop chips with Broadcom instead of Marvell, signaling a shift in its AI chip strategy that could affect its supply chain and technological edge.",
+            "context": null,
+            "sentiment": null
+          }
+        ],
+        "report_dates": [
+          "2025-12-08",
+          "2025-12-07"
+        ],
+        "summary": {
+          "overall_sentiment": null,
+          "key_themes": [],
+          "summary": "Microsoft is considering shifting its AI chip development partnership from Marvell to Broadcom, indicating a strategic change that could impact its AI capabilities and supply chain. The AI sector shows fractured performance with Microsoft-related stocks not moving in unison with other tech companies, suggesting volatility. OpenAI, closely linked to Microsoft, plans to release an updated ChatGPT model around December 9 to counter Google's Gemini 3 momentum, affecting Microsoft's AI competitiveness."
+        }
+      }
+    },
+    {
+      "ticker": "GOOGL",
+      "error": null,
+      "vital_knowledge": {
+        "ticker": "GOOGL",
+        "headlines": [
+          {
+            "headline": "GOOGL plans to launch smart glasses next year to compete with similar products from Meta, signaling an expansion into wearable technology that could diversify revenue streams and enhance its competitive position in the AR/VR market.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "NextEra Energy will partner with Google to develop multiple gigawatt-scale data center campuses with accompanying generation and capacity, indicating Google's commitment to expanding its cloud infrastructure and supporting sustainable energy initiatives.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "GOOGL is underperforming in the tech sector alongside companies like ADBE, HPQ, INTC, META, MRVL, NFLX, SNDK, and TSLA, indicating sector-specific challenges impacting its stock performance.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "AVGO (Broadcom) should speak even more favorably on its AI chip opportunity thanks to Google's TPUs, indicating GOOGL's technology is positively influencing Broadcom's AI chip prospects, which could enhance GOOGL's AI ecosystem and partnerships.",
+            "context": null,
+            "sentiment": null
+          },
+          {
+            "headline": "OpenAI will release its response to Google's Gemini 3 AI model around Dec 9, aiming to blunt Google's AI industry momentum, highlighting GOOGL's leading position in AI and competitive dynamics in the sector.",
+            "context": null,
+            "sentiment": null
+          }
+        ],
+        "report_dates": [
+          "2025-12-08",
+          "2025-12-07"
+        ],
+        "summary": {
+          "overall_sentiment": null,
+          "key_themes": [],
+          "summary": "GOOGL plans to launch smart glasses next year to compete with Meta, expanding into wearable technology. It is partnering with NextEra Energy to develop large-scale data center campuses, showing commitment to cloud infrastructure and sustainability. GOOGL faces sector challenges impacting stock performance but is leading in AI with its Gemini 3 model, while OpenAI plans a competitive response around Dec 9."
+        }
+      }
+    }
+  ]
+}

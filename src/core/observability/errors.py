@@ -22,6 +22,25 @@ class ErrorTracker:
         self.errors_dir = Path("data/errors")
         self.errors_dir.mkdir(parents=True, exist_ok=True)
         self.today = datetime.now().strftime("%Y-%m-%d")
+        # Clear old error files when a new tracker is created (fresh start for each run)
+        self._clear_old_errors()
+
+    def _clear_old_errors(self):
+        """Delete all existing error files to start fresh for this run."""
+        if not self.errors_dir.exists():
+            return
+
+        deleted_count = 0
+        for file in self.errors_dir.iterdir():
+            if file.is_file() and file.suffix in (".json", ".jsonl", ".txt"):
+                try:
+                    file.unlink()
+                    deleted_count += 1
+                except Exception as e:
+                    print(f"[ErrorTracker] Could not delete {file.name}: {e}")
+
+        if deleted_count > 0:
+            print(f"[ErrorTracker] Cleared {deleted_count} old error file(s)")
     
     def record_error(
         self,
@@ -30,17 +49,24 @@ class ErrorTracker:
         context: Optional[Dict[str, Any]] = None,
         diagnostics: Optional[Dict[str, Any]] = None,
         failure_point: Optional[str] = None,
+        session_id: Optional[str] = None,
     ):
         """
         Record an error with component identification and diagnostics.
-        
+
         Args:
             error: The exception that occurred
             component: Which component failed (file/function name)
             context: Additional context (ticker, source, etc.)
             diagnostics: Diagnostic information (page URL, timing, etc.)
             failure_point: Which stage failed (e.g., "navigation", "extraction", "session_creation")
+            session_id: Browserbase session ID for debugging via Session Inspector
         """
+        # Build session URL for easy debugging access
+        session_url = None
+        if session_id:
+            session_url = f"https://www.browserbase.com/sessions/{session_id}"
+
         error_record = {
             "timestamp": datetime.utcnow().isoformat(),
             "component": component,  # Which file/component failed
@@ -49,6 +75,8 @@ class ErrorTracker:
             "context": context or {},
             "failure_point": failure_point,  # Which stage failed
             "diagnostics": diagnostics or {},  # Diagnostic information
+            "session_id": session_id,  # Browserbase session ID
+            "session_url": session_url,  # Direct link to Session Inspector
             "traceback": self._extract_relevant_traceback(error),
         }
         
@@ -189,7 +217,9 @@ class ErrorTracker:
                 if error.get("context"):
                     ctx_str = ", ".join(f"{k}={v}" for k, v in error["context"].items())
                     lines.append(f"  Context: {ctx_str}")
-        
+                if error.get("session_url"):
+                    lines.append(f"  Session: {error['session_url']}")
+
         return "\n".join(lines)
     
     def get_file_path_for_llm(self) -> str:

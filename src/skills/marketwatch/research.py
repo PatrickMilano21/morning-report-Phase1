@@ -4,6 +4,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
+from src.core.retry_helpers import navigate_with_retry
+
 
 class NewsLink(BaseModel):
     """Simple model for extracting just the link information (before visiting the article)."""
@@ -72,7 +74,7 @@ async def fetch_marketwatch_top_stories(
     
     try:
         # Navigate to MarketWatch
-        await page.goto(url, wait_until="networkidle", timeout=30000)
+        await navigate_with_retry(page, url, max_retries=2, timeout=30000, wait_until="networkidle")
         print(f"[MarketWatch] Navigation completed")
         
         # Attempt to extract any text from the page
