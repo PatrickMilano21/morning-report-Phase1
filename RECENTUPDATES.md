@@ -1,6 +1,6 @@
 # Recent Updates - Morning Report Optimization
 
-**Last Updated:** 2025-12-08
+**Last Updated:** 2025-12-10
 
 ---
 
@@ -33,19 +33,56 @@ All Phase 1 items have been implemented and tested successfully.
 
 ### 1. YahooQuote Observe→Cache→Extract Pattern ✅
 
-Implemented a warm-up pattern that reduces YahooQuote tokens by ~22%:
+Implemented a warm-up pattern that reduces YahooQuote tokens by ~35%:
 
 - **File:** `src/skills/yahoo/quote.py`
 - **Pattern:** One observe() call caches XPath selector, subsequent tickers skip observe() and go straight to scoped extract()
 - **Key insight:** `selector_cache` lives in Python memory, not Browserbase session, so cached selectors work across sessions
 
 **Results (YahooQuote only - fair comparison):**
-| Ticker | Baseline | Phase1 | Savings |
-|--------|----------|--------|---------|
-| NVDA | 28,685 | 22,413 | -22% |
-| AMZN | 26,378 | 19,545 | -26% |
-| MSFT | 36,269 | 29,837 | -18% |
-| GOOGL | 27,641 | 21,182 | -23% |
+| Ticker | Baseline | With Cache | Savings |
+|--------|----------|------------|---------|
+| NVDA | 28,685 | 16,374 | **-43%** |
+| AMZN | 26,378 | 12,902 | **-51%** |
+| MSFT | 36,269 | 28,386 | **-22%** |
+| GOOGL | 27,641 | 19,560 | **-29%** |
+| **TOTAL** | **118,973** | **77,222** | **-35%** |
+
+### 1b. Disk-Persistent Selector Cache ✅ (NEW - 2025-12-10)
+
+Extended the cache to persist to disk so selectors survive across script runs:
+
+- **File:** `src/core/cache.py`
+- **Cache Location:** `data/cache/selectors.json`
+- **Pattern:** First run calls `observe()` and saves to disk; subsequent runs load from disk and skip `observe()` entirely
+- **Benefit:** Saves ~28K tokens per warm-up on subsequent runs (no `observe()` call needed)
+
+**Implementation:**
+```python
+CACHE_FILE = Path("data/cache/selectors.json")
+
+class SelectorCache:
+    def __init__(self):
+        self._cache: Dict[str, str] = {}
+        self._load()  # Load from disk on startup
+
+    def _load(self):
+        if CACHE_FILE.exists():
+            self._cache = json.loads(CACHE_FILE.read_text())
+            print(f"[Cache] Loaded {len(self._cache)} cached selectors")
+
+    def _save(self):
+        CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        CACHE_FILE.write_text(json.dumps(self._cache, indent=2))
+
+    def set(self, key: str, selector: str) -> None:
+        self._cache[key] = selector
+        self._save()  # Persist to disk
+```
+
+**Verification:**
+- First run: `[YahooQuote] Warm-up complete, cached selector: xpath=/html...`
+- Second run: `[Cache] Loaded 1 cached selectors` (no observe() call)
 
 ### 2. verbose=0 via env var ✅
 
@@ -103,7 +140,8 @@ browserbase_session_create_params={
 | Item | Status | Notes |
 |------|--------|-------|
 | `verbose=0` | ✅ Done | Set via env var |
-| Yahoo fix (observe→cache→extract) | ✅ Done | -22% tokens |
+| Yahoo fix (observe→cache→extract) | ✅ Done | -35% tokens |
+| **Disk-persistent cache** | ✅ Done | Saves to `data/cache/selectors.json` |
 | Basic metadata | ✅ Done | Session IDs tracked |
 | Region selection | ✅ Done | Via browserbase_session_create_params |
 | keepAlive + timeout | ✅ Done | timeout=900 seconds |
@@ -117,10 +155,11 @@ browserbase_session_create_params={
 | File | Purpose |
 |------|---------|
 | `src/core/stagehand_runner.py` | Stagehand/Browserbase config + session params |
-| `src/core/retry_helpers.py` | **NEW** - Shared retry helpers for all skills |
+| `src/core/retry_helpers.py` | Shared retry helpers for all skills |
 | `src/skills/yahoo/quote.py` | YahooQuote with observe→cache→extract |
-| `src/core/cache.py` | Selector cache (Python memory) |
+| `src/core/cache.py` | Selector cache (disk-persistent to `data/cache/selectors.json`) |
 | `src/core/cli/run_morning_snapshot.py` | Main pipeline with warm-up + per-article metrics |
+| `data/cache/selectors.json` | Cached XPath selectors (persists across runs) |
 | `data/metrics/000_baseline.json` | Baseline metrics |
 | `data/metrics/001_phase1.json` | Phase1 metrics (with all improvements) |
 | `Customer Improvements.md` | Full roadmap |

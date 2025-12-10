@@ -133,6 +133,7 @@ These are the **real problems** from QUICK_SUMMARY.md that need fixing first:
 | Item | File | Change | Status |
 |------|------|--------|--------|
 | observe → cache → act | `src/core/cache.py` | Cache selectors, avoid re-learning | ✅ |
+| **Disk-persistent cache** | `src/core/cache.py` | Persist to `data/cache/selectors.json` | ✅ |
 | Intelligent model switching | `stagehand_runner.py` | Cheaper models for simple actions | ⏳ |
 | Smaller extractions | `googlenews/research.py` | Split large extractions | ✅ |
 | Screenshots | All skills | Capture at critical points | ⏳ |
@@ -296,7 +297,7 @@ PER-SOURCE BREAKDOWN:
 
 ---
 
-## CURRENT STATUS (2025-12-09) - PHASE 1 COMPLETE!
+## CURRENT STATUS (2025-12-10) - PHASE 1 COMPLETE + DISK CACHE!
 
 ### Phase Summary
 
@@ -315,7 +316,8 @@ PER-SOURCE BREAKDOWN:
 - **Session Metadata**: Filter by source/ticker/run in Browserbase dashboard
 - **Structured Error Tracking**: JSON + TXT summaries in `data/errors/`
 - **Per-Source Metrics**: Token usage, timing, and costs tracked
-- **XPath Caching**: observe() → cache → extract() pattern reduces tokens by ~22%
+- **XPath Caching**: observe() → cache → extract() pattern reduces tokens by ~35%
+- **Disk-Persistent Cache**: Selectors saved to `data/cache/selectors.json`, survive across runs
 
 ### Remaining Items (Quick Wins)
 
@@ -337,6 +339,16 @@ PER-SOURCE BREAKDOWN:
 | Total Tokens | ~400K | ~1.2M |
 
 *Note: Token increase due to processing more tickers concurrently. Per-ticker cost remains similar.*
+
+### YahooQuote Token Comparison (with Disk Cache - 2025-12-10)
+
+| Ticker | Baseline | With Cache | Savings |
+|--------|----------|------------|---------|
+| NVDA | 28,685 | 16,374 | **-43%** |
+| AMZN | 26,378 | 12,902 | **-51%** |
+| MSFT | 36,269 | 28,386 | **-22%** |
+| GOOGL | 27,641 | 19,560 | **-29%** |
+| **TOTAL** | **118,973** | **77,222** | **-35%** |
 
 ### Python Environment
 
