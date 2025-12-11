@@ -187,20 +187,6 @@ These are the **real problems** from QUICK_SUMMARY.md that need fixing first:
 
 ---
 
-## Interview Narrative
-
-> "Here's what I found, here's how I prioritized it, and here's how I'd phase improvements over time."
-
-1. **P0 is pain-driven**: Security (passwords in logs), reliability (timeouts), extraction quality (Yahoo), observability (no per-source tracking)
-
-2. **Phases build on each other**: Stability → Cost → Observability → Refinement → New Features
-
-3. **Resilience matters**: Not just fast and cheap, but *what happens when things fail?* Retries, fallbacks, structured error logging.
-
-4. **Customer-facing extras come last**: MCP and evals are valuable, but only after the core pipeline is solid.
-
----
-
 ## Measurement Strategy: Proving Improvements Work
 
 ### Progressive Metrics Workflow
